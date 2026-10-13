@@ -54,13 +54,16 @@ def decode(day):
 
 
 def main():
-    y0 = int(sys.argv[1]) if len(sys.argv) > 1 else 2018
-    y1 = int(sys.argv[2]) if len(sys.argv) > 2 else 2025
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    build_only = "--build-only" in sys.argv  # only convert already downloaded days
+    y0 = int(args[0]) if len(args) > 0 else 2018
+    y1 = int(args[1]) if len(args) > 1 else 2025
     RAW.mkdir(parents=True, exist_ok=True)
     days = [d.date() for d in pd.date_range(f"{y0}-01-01", f"{y1}-12-31")]
-    with ThreadPoolExecutor(3) as ex:
-        failed = [d for d, ok in ex.map(fetch, days) if not ok]
-    print("failed days:", len(failed), failed[:10])
+    if not build_only:
+        with ThreadPoolExecutor(3) as ex:
+            failed = [d for d, ok in ex.map(fetch, days) if not ok]
+        print("failed days:", len(failed), failed[:10])
     rows = []
     for d in days:
         if (RAW / f"{d:%Y%m%d}.bi5").exists():
