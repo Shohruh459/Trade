@@ -58,7 +58,7 @@ def main():
     y1 = int(sys.argv[2]) if len(sys.argv) > 2 else 2025
     RAW.mkdir(parents=True, exist_ok=True)
     days = [d.date() for d in pd.date_range(f"{y0}-01-01", f"{y1}-12-31")]
-    with ThreadPoolExecutor(2) as ex:
+    with ThreadPoolExecutor(3) as ex:
         failed = [d for d, ok in ex.map(fetch, days) if not ok]
     print("failed days:", len(failed), failed[:10])
     rows = []
