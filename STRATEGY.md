@@ -19,7 +19,9 @@ Holat: **LOYIHA (draft)**. Qoidalar test boshlanishidan OLDIN qotiriladi. Natija
 - Taymfreym: H1. Oldingi N (boshlang'ich 20) sham diapazoni chegarasini yopilgan sham bilan buzish.
 - Filtr: ATR/spred nisbati, EMA200 yo'nalishi.
 - SL/TP: ATR asosida (A bilan bir xil mantiq).
-- Eslatma: tafsilotlar mql5.com/en/articles/16569 maqolasidan tekshiriladi (bu muhitdan mql5.com ochilmadi, hali o'qilmagan). Maqoladan keyin shu bo'lim yangilanadi.
+- Manba g'oyasi: mql5.com/en/articles/16569 (Gamuchirai Zororo Ndawana, 2024-12). Kanal = oldingi sham high/low; narx kanaldan tashqarida ochilib yopilsa "bias" belgilanadi; bias keyingi shamlar bilan tasdiqlansa kirish; yo'nalish EMA(5) va EMA(60) bilan tasdiqlanadi (tez > sekin = long); SL/TP ATR(14) asosida. Muallif H1, 2020-01…2024-11 da sinagan.
+- Muhim: muallifning o'zi yozishicha, birinchi variantda savdolarning ~70% i zarar bilan yopilgan, filtrlardan keyin ~55%; "breakout strategiyalar EUR/USD uchun mos bo'lmasligi mumkin" deb xulosa qilgan. Ya'ni foydali ekani isbotlanmagan, bu faqat tekshiriladigan g'oya.
+- Mualliflik: maqola kodiga MetaQuotes huquqlari saqlangan. Kodni ko'chirmaymiz, qoidalarni o'zimiz mustaqil yozamiz.
 
 ## 3. Umumiy filtrlar
 - Sessiya: London + Nyu-York (broker serveri vaqti bo'yicha sozlanadi).
