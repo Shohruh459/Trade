@@ -21,6 +21,7 @@ Holat: **LOYIHA (draft)**. Qoidalar test boshlanishidan OLDIN qotiriladi. Natija
 - SL/TP: ATR asosida (A bilan bir xil mantiq).
 - Manba g'oyasi: mql5.com/en/articles/16569 (Gamuchirai Zororo Ndawana, 2024-12). Kanal = oldingi sham high/low; narx kanaldan tashqarida ochilib yopilsa "bias" belgilanadi; bias keyingi shamlar bilan tasdiqlansa kirish; yo'nalish EMA(5) va EMA(60) bilan tasdiqlanadi (tez > sekin = long); SL/TP ATR(14) asosida. Muallif H1, 2020-01…2024-11 da sinagan.
 - Muhim: muallifning o'zi yozishicha, birinchi variantda savdolarning ~70% i zarar bilan yopilgan, filtrlardan keyin ~55%; "breakout strategiyalar EUR/USD uchun mos bo'lmasligi mumkin" deb xulosa qilgan. Ya'ni foydali ekani isbotlanmagan, bu faqat tekshiriladigan g'oya.
+- Tuzatish (2026-10-14): tasdiq sharti "ochilish va yopilish ikkalasi ham tashqarida" H1'da deyarli bajarilmasdi (461 breakoutdan 3 tasi), shuning uchun faqat "yopilish tashqarida" qoldirildi. Bu B ning natijasini ko'rishdan oldin qilingan mantiqiy tuzatish.
 - Mualliflik: maqola kodiga MetaQuotes huquqlari saqlangan. Kodni ko'chirmaymiz, qoidalarni o'zimiz mustaqil yozamiz.
 
 ## 3. Umumiy filtrlar

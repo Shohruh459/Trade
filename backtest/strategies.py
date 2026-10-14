@@ -54,7 +54,8 @@ def strategy_b(df, channel=20, trend=200):
     """Breakout with confirmation (own implementation of the idea in STRATEGY.md section 2B).
 
     Bar i-1 closes beyond the prior `channel`-bar high/low (bias). Bar i confirms by
-    opening and closing beyond the extreme of the breakout bar. Trend filter: EMA(trend).
+    closing beyond the extreme of the breakout bar (requiring the open too is almost
+    never true on H1, where open ~ previous close). Trend filter: EMA(trend).
     """
     c, o = df["close"], df["open"]
     hi = df["high"].rolling(channel).max().shift(2)
@@ -62,8 +63,8 @@ def strategy_b(df, channel=20, trend=200):
     t = ema(c, trend)
     brk_up = c.shift() > hi
     brk_dn = c.shift() < lo
-    conf_up = brk_up & (o > df["high"].shift()) & (c > df["high"].shift()) & (c > t)
-    conf_dn = brk_dn & (o < df["low"].shift()) & (c < df["low"].shift()) & (c < t)
+    conf_up = brk_up & (c > df["high"].shift()) & (c > t)
+    conf_dn = brk_dn & (c < df["low"].shift()) & (c < t)
     sig = np.where(conf_up, 1, np.where(conf_dn, -1, 0))
     return sig, atr(df).to_numpy()
 
