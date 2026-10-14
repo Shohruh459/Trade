@@ -42,3 +42,22 @@ def test_no_entry_outside_session_and_no_lookahead():
     df = bars([(1.1, 1.1, 1.1, 1.1)] * 6)  # hours 8..13
     t, _ = run(df, np.array([1, 1, 1, 0, 0, 0]), np.full(6, 0.002), cfg)
     assert all(10 <= ts.hour < 12 for ts in t.entry_time)
+
+
+def test_trailing_stop_locks_profit():
+    cfg = Config(spread_pips=0, slippage_pips=0, commission_per_lot=0, session_start=0, session_end=24,
+                 rr=None, trail_atr=1.0, trail_start_r=1.0)
+    # ATR=20 pips, SL=30 pips. Price runs +50 pips (>1R) then falls back.
+    df = bars([(1.1000, 1.1005, 1.0995, 1.1000), (1.1000, 1.1050, 1.1000, 1.1045),
+               (1.1045, 1.1046, 1.1000, 1.1005), (1.1005, 1.1005, 1.1005, 1.1005)])
+    t, _ = run(df, np.array([1, 0, 0, 0]), np.full(4, 0.0020), cfg)
+    # trail after bar1: 1.1050 - 0.0020 = 1.1030 > entry, so exit by stop at 1.1030 (profit)
+    assert t.reason[0] == "sl" and abs(t.exit[0] - 1.1030) < 1e-9 and t.pnl[0] > 0
+
+
+def test_breakeven():
+    cfg = Config(spread_pips=0, slippage_pips=0, commission_per_lot=0, session_start=0, session_end=24, rr=None, be_r=1.0)
+    df = bars([(1.1000, 1.1005, 1.0995, 1.1000), (1.1000, 1.1035, 1.1000, 1.1030),
+               (1.1030, 1.1030, 1.0990, 1.1000), (1.1, 1.1, 1.1, 1.1)])
+    t, _ = run(df, np.array([1, 0, 0, 0]), np.full(4, 0.0020), cfg)
+    assert abs(t.exit[0] - 1.1000) < 1e-9 and abs(t.pnl[0]) < 1e-6

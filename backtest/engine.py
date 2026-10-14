@@ -9,6 +9,7 @@ Conventions (kept deliberately conservative):
 - Equity is realized-only (updated on trade close).
 """
 from dataclasses import dataclass
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -24,7 +25,10 @@ class Config:
     commission_per_lot: float = 7.0   # USD per 100k units, round turn
     slippage_pips: float = 0.2        # per side, applied against us
     sl_atr: float = 1.5
-    rr: float = 2.0
+    rr: Optional[float] = 2.0         # take-profit in R; None = no fixed TP
+    be_r: Optional[float] = None      # move SL to entry after +be_r R
+    trail_atr: Optional[float] = None  # trailing distance in ATRs (of entry bar)
+    trail_start_r: float = 1.0        # start trailing after +R
     session_start: int = 7            # UTC hour, inclusive
     session_end: int = 20             # UTC hour, exclusive
     friday_no_entry_hour: int = 18
@@ -67,6 +71,19 @@ def run(df: pd.DataFrame, signal: np.ndarray, atr: np.ndarray, cfg: Config = Con
         })
         pos = None
 
+    def update_stops(i):
+        """Tighten the stop using bar i's favourable extreme; takes effect from bar i+1."""
+        d, e, a0, sl_dist = pos["dir"], pos["entry"], pos["atr0"], pos["sl_dist"]
+        fav = h[i] if d == 1 else l[i] + s            # best price reached (bid high / ask low)
+        gain = (fav - e) * d
+        new_sl = pos["sl"]
+        if cfg.be_r is not None and gain >= cfg.be_r * sl_dist:
+            new_sl = max(new_sl, e) if d == 1 else min(new_sl, e)
+        if cfg.trail_atr is not None and gain >= cfg.trail_start_r * sl_dist:
+            cand = fav - cfg.trail_atr * a0 if d == 1 else fav + cfg.trail_atr * a0
+            new_sl = max(new_sl, cand) if d == 1 else min(new_sl, cand)
+        pos["sl"] = new_sl
+
     def check_exit(i):
         d, sl, tp = pos["dir"], pos["sl"], pos["tp"]
         if d == 1:  # exit on bid
@@ -96,6 +113,8 @@ def run(df: pd.DataFrame, signal: np.ndarray, atr: np.ndarray, cfg: Config = Con
             elif wdays[i] == 4 and hours[i] >= cfg.friday_close_hour:
                 px = o[i] - slip if pos["dir"] == 1 else o[i] + s + slip
                 close_trade(i, px, "friday_close")
+            else:
+                update_stops(i)
 
         if equity <= peak * (1 - cfg.max_drawdown):
             halted = True
@@ -118,12 +137,15 @@ def run(df: pd.DataFrame, signal: np.ndarray, atr: np.ndarray, cfg: Config = Con
                 if units >= 1000:
                     pos = {
                         "dir": int(sig), "entry": entry, "units": units, "time": idx[i],
-                        "sl": entry - sig * sl_dist, "tp": entry + sig * sl_dist * cfg.rr,
-                        "risk": units * sl_dist,
+                        "sl": entry - sig * sl_dist,
+                        "tp": entry + sig * sl_dist * cfg.rr if cfg.rr is not None else sig * np.inf,
+                        "risk": units * sl_dist, "atr0": a, "sl_dist": sl_dist,
                     }
                     res = check_exit(i)
                     if res:
                         close_trade(i, *res)
+                    else:
+                        update_stops(i)
 
     if pos is not None:  # mark-to-market at the last close
         close_trade(len(df) - 1, c[-1] - slip if pos["dir"] == 1 else c[-1] + s + slip, "end")

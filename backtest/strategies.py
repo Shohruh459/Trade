@@ -69,4 +69,47 @@ def strategy_b(df, channel=20, trend=200):
     return sig, atr(df).to_numpy()
 
 
+def strategy_c(df, rsi_lo=30, rsi_hi=70, adx_max=20):
+    """RSI mean reversion in range markets (ADX low)."""
+    r, ax = rsi(df["close"]), adx(df)
+    sig = np.where((r < rsi_lo) & (ax < adx_max), 1, np.where((r > rsi_hi) & (ax < adx_max), -1, 0))
+    return sig, atr(df).to_numpy()
+
+
+def strategy_d(df, n=20, k=2.0, adx_max=25):
+    """Bollinger band reversion in range markets."""
+    c = df["close"]
+    m, sd = c.rolling(n).mean(), c.rolling(n).std()
+    ax = adx(df)
+    sig = np.where((c < m - k * sd) & (ax < adx_max), 1, np.where((c > m + k * sd) & (ax < adx_max), -1, 0))
+    return sig, atr(df).to_numpy()
+
+
+def strategy_e(df, range_end=7, window_end=11):
+    """Asian-range breakout at the London open: first close beyond the 00:00-07:00 UTC range, once per day."""
+    day = df.index.normalize()
+    hr = df.index.hour
+    asia = df[hr < range_end]
+    hi = asia.groupby(asia.index.normalize())["high"].max().reindex(day).to_numpy()
+    lo = asia.groupby(asia.index.normalize())["low"].min().reindex(day).to_numpy()
+    c = df["close"].to_numpy()
+    win = (hr >= range_end) & (hr < window_end)
+    raw = np.where(win & (c > hi), 1, np.where(win & (c < lo), -1, 0))
+    sig = np.zeros(len(df), dtype=int)
+    done = None
+    for i in range(len(df)):
+        if raw[i] != 0 and day[i] != done:
+            sig[i] = raw[i]
+            done = day[i]
+    return sig, atr(df).to_numpy()
+
+
+def strategy_g(df):
+    """Regime switch: trend signal (A) when trending, mean reversion (C) when ranging."""
+    sa, a = strategy_a(df)
+    sc, _ = strategy_c(df)
+    return np.where(sa != 0, sa, sc), a
+
+
 STRATEGIES = {"A": strategy_a, "B": strategy_b}
+EXTRA = {"C": strategy_c, "D": strategy_d, "E": strategy_e, "G": strategy_g}
