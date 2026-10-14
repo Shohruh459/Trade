@@ -111,5 +111,46 @@ def strategy_g(df):
     return np.where(sa != 0, sa, sc), a
 
 
+def strategy_f(df, fast=20, slow=50, trend=200):
+    """Trend pullback: in an EMA uptrend, buy when price dips to EMA(fast) and closes back above it."""
+    c = df["close"]
+    f, s_, t = ema(c, fast), ema(c, slow), ema(c, trend)
+    up = (f > s_) & (s_ > t) & (df["low"] <= f) & (c > f) & (c > c.shift())
+    dn = (f < s_) & (s_ < t) & (df["high"] >= f) & (c < f) & (c < c.shift())
+    return np.where(up, 1, np.where(dn, -1, 0)), atr(df).to_numpy()
+
+
+def strategy_h(df, range_end=7, move_atr=0.8):
+    """London momentum: at 07:00-08:00 UTC follow the move since the 00:00-07:00 range midpoint if strong enough."""
+    hr = df.index.hour
+    day = df.index.normalize()
+    a = atr(df)
+    asia = df[hr < range_end]
+    mid = ((asia.groupby(asia.index.normalize())["high"].max() + asia.groupby(asia.index.normalize())["low"].min()) / 2).reindex(day).to_numpy()
+    move = (df["close"].to_numpy() - mid) / a.to_numpy()
+    win = (hr >= range_end) & (hr < range_end + 2)
+    raw = np.where(win & (move > move_atr), 1, np.where(win & (move < -move_atr), -1, 0))
+    sig, done = np.zeros(len(df), dtype=int), None
+    for i in range(len(df)):
+        if raw[i] != 0 and day[i] != done:
+            sig[i], done = raw[i], day[i]
+    return sig, a.to_numpy()
+
+
+def strategy_i(df, trend=200, lo=10, hi=90):
+    """Short-term RSI(2) reversion with the trend (Connors style)."""
+    c = df["close"]
+    r2, t = rsi(c, 2), ema(c, trend)
+    return np.where((r2 < lo) & (c > t), 1, np.where((r2 > hi) & (c < t), -1, 0)), atr(df).to_numpy()
+
+
+def strategy_j(df, n=55):
+    """Slow Donchian trend breakout (close beyond prior n-bar extreme), meant to be used with a trailing stop."""
+    c = df["close"]
+    hi, lo = df["high"].rolling(n).max().shift(), df["low"].rolling(n).min().shift()
+    return np.where(c > hi, 1, np.where(c < lo, -1, 0)), atr(df).to_numpy()
+
+
 STRATEGIES = {"A": strategy_a, "B": strategy_b}
-EXTRA = {"C": strategy_c, "D": strategy_d, "E": strategy_e, "G": strategy_g}
+EXTRA = {"C": strategy_c, "D": strategy_d, "E": strategy_e, "G": strategy_g,
+         "F": strategy_f, "H": strategy_h, "I": strategy_i, "J": strategy_j}
