@@ -72,4 +72,4 @@ N1 va N2 ikkalasi ham mezondan o'tmasa — **yangi qidiruv to'xtatiladi**. Qolad
 - Bu moliyaviy maslahat emas; yo'qotishlar mumkin.
 
 ## 9. O'zgartirishlar jurnali
-(hozircha bo'sh)
+- 2026-10-17: N1 ishga tushirildi (backtest/n1.py, reports/n1_results.md). Natija: **PASS** (a–f hammasi bajarildi). Reja va mezonlarga o'zgartirish kiritilmadi. Amalga oshirish tafsiloti: timing nazoratida har aktiv signali mustaqil aylana siljitiladi; xarajat vazn o'zgarishi yig'indisi (driftsiz) bo'yicha hisoblandi. N2 hali ishga tushirilmagan.
