@@ -90,3 +90,4 @@ Ba'zi skriptlar katta ma'lumot keshlariga (`/tmp/claude-0/...`: oltin M1/kunlik,
 - **N2 (rejadagi AQSh yangiliklari atrofida oltin): FAIL (Discovery).** 96 hodisa, 6 hujayra ham xarajatdan keyin manfiy (−0.14…−0.29 R). Validation/Final ishlatilmadi. `reports/n2_discovery.md`.
 - N1 uchun oylik hisoblagich: `tools/n1_monthly_check.py` (forward kuzatuv, `STRATEGY_FORWARD.md` 9-bo'lim).
 - **Foydalanuvchi qoidasi (H1 bias + M5 EMA9 reclaim, London/overlap): FAIL.** Qaror davri 2022–25: 2513 savdo, o'rtacha −0.16 R, yutuq 41.5%, xarajatsiz ham −0.02 R (ustunlik yo'q), tasodifiy kirishdan yaxshi emas. `reports/ldn_results.md`, `STRATEGY_LDN.md`.
+- **Foydalanuvchi qoidasi (Daily bias + H4 EMA20 reclaim): FAIL (dastlabki).** 2019–2025: 172 savdo, o'rtacha +0.10 R (p=0.19), 2019–21 da −0.23 R, 2022–25 da +0.38 R; tasodifiy kirish (bias yo'nalishida) +0.07 R beradi (p=0.37), ya'ni foyda asosan oltin trendi (beta). `reports/h4_results.md`, `STRATEGY_H4.md`.

@@ -48,4 +48,4 @@ Yangilik filtrisiz; risk 1%; faqat Buy / faqat Sell; H4 kesishuv bilan chiqishsi
 PASS: dastlabki; MT5 kodi, demo/forward ≥ 3 oy. FAIL: rad etiladi; yaxshilash taqiqlanadi.
 
 ## 9. O'zgartirishlar jurnali
-(hozircha bo'sh)
+- 2026-10-17: sinov ishga tushirildi (backtest/h4.py, reports/h4_results.md). Natija: **FAIL** (C1, C3, C4, C5 bajarilmadi; C2, C6 bajarildi). Qoida va mezonlarga o'zgartirish kiritilmadi.
