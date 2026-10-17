@@ -66,4 +66,7 @@ Oltinning h ∈ {3, 12} oylik keyingi logaritmik daromadi y = ln(P_{t+h}/P_t). P
 `reports/portfolio_results.md` (A, B, C bo'limlari, jadvallar, qaror), kod `backtest/portfolio.py`, birlik testlari (daromad formulalari, blok bootstrap, Clark–West).
 
 ## 9. O'zgartirishlar jurnali
-(hozircha bo'sh)
+- 2026-10-17 (kod yozilgandan keyin, natijani ko'rishdan OLDIN): **oylik o'rtacha narxlar vaqt xatosi (Working effect)** haqida qo'shimcha. Oy oxirida qaror va keyingi oy (o'rtacha-dan-o'rtachaga) daromadi
+  bir-biriga to'liq mos emas: daromadning bir qismi qaror vaqtida allaqachon realizatsiya bo'lgan va trend/momentum signallari bilan bog'liq, bu B va C ni sun'iy yaxshilashi mumkin.
+  Shuning uchun B va C ga **1 oy kechiktirilgan variant** (signal t−1 oy oxirigacha, qaror/bashorat bir oy keyin) qo'shiladi. Mezonlar o'zgarmaydi. Asosiy variant mezondan o'tsa-yu kechiktirilgan o'tmasa,
+  natija "vaqt artefakti ehtimoli" deb belgilanadi va qabul qilinmaydi.
