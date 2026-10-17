@@ -48,4 +48,4 @@ Yangilik filtrisiz; risk 0.5% va 1%; faqat Buy / faqat Sell; London / overlap al
 PASS: dastlabki; MT5 kodi, demo/forward ≥ 3 oy. FAIL: rad etiladi, parametrlarni "yaxshilash" taqiqlanadi; yangi variant yangi reja va yangi ma'lumot bilan.
 
 ## 9. O'zgartirishlar jurnali
-(hozircha bo'sh)
+- 2026-10-17: sinov ishga tushirildi (backtest/ldn.py, reports/ldn_results.md). Natija: **FAIL** (C1–C6 hammasi bajarilmadi). Qoida va mezonlarga o'zgartirish kiritilmadi.

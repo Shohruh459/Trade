@@ -89,3 +89,4 @@ Ba'zi skriptlar katta ma'lumot keshlariga (`/tmp/claude-0/...`: oltin M1/kunlik,
 - **N3 (oltin M1 swing-trend + ATR filtri + kunlik ±10%): FAIL.** Xarajatdan keyin o'rtacha −0.15 R, yutuq 40%, tasodifiy kirishdan farq yo'q (p=0.86); 1% riskda hisob deyarli to'liq yo'qoladi. Kunlik ±10% chegara deyarli ishlamadi (4 kun, hammasi −10%). `reports/n3_results.md`.
 - **N2 (rejadagi AQSh yangiliklari atrofida oltin): FAIL (Discovery).** 96 hodisa, 6 hujayra ham xarajatdan keyin manfiy (−0.14…−0.29 R). Validation/Final ishlatilmadi. `reports/n2_discovery.md`.
 - N1 uchun oylik hisoblagich: `tools/n1_monthly_check.py` (forward kuzatuv, `STRATEGY_FORWARD.md` 9-bo'lim).
+- **Foydalanuvchi qoidasi (H1 bias + M5 EMA9 reclaim, London/overlap): FAIL.** Qaror davri 2022–25: 2513 savdo, o'rtacha −0.16 R, yutuq 41.5%, xarajatsiz ham −0.02 R (ustunlik yo'q), tasodifiy kirishdan yaxshi emas. `reports/ldn_results.md`, `STRATEGY_LDN.md`.
