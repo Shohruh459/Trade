@@ -49,10 +49,11 @@ To'liq jadval: `reports/summary_gold_EAs.md`.
 - "Har oy foyda" va'dasi ishonchsiz belgi; ishonchli maqsad: uzoq muddatli ijobiy kutilma va nazoratdagi drawdown.
 
 ## 6. Repo tuzilishi
-- `STRATEGY.md`, `STRATEGY_GOLD.md`, `STRATEGY_TREND.md`, `STRATEGY_MTF.md`, `STRATEGY_MTF2.md`, `STRATEGY_PORTFOLIO.md`: oldindan yozilgan rejalar va qoidalar.
+- `STRATEGY.md`, `STRATEGY_GOLD.md`, `STRATEGY_TREND.md`, `STRATEGY_MTF.md`, `STRATEGY_MTF2.md`, `STRATEGY_PORTFOLIO.md`, `STRATEGY_FORWARD.md`: oldindan yozilgan rejalar va qoidalar.
 - `backtest/`: engine (`engine.py`), strategiyalar, har bir EA porti (`fvggold.py`, `n30_*.py`, `trillex.py`), hodisa tadqiqoti (`event_study.py`), kunlik trend (`trend.py`), MTF (`mtf.py`, `mtf2.py`), hisobot skriptlari.
 - `tools/`: ma'lumot yuklash/yig'ish (Dukascopy, Hugging Face, oltin vaqt zonasini tuzatish).
 - `reports/`: barcha natijalar (`summary_gold_EAs.md`, `fvggold.md`, `trillex.md`, `n30_*.md`, `event_study_H1.md`, `trend_results.md`, `mtf_*.md`, `mtf2_results.md`).
+- `forward_test/`: oylik narxlar (`gold_prices.csv`), qulflangan forward jurnal (`log.csv`), oxirgi hisobot (`latest.md`).
 - `tests/`: engine va MTF2 chiqish mantig'i uchun birlik testlari (`pytest -q tests`).
 - `data/`: kichik tayyor CSV'lar (EURUSD H1 2020–2026, XAUUSD H1 2018–2025). Katta xom ma'lumotlar repoda yo'q.
 
@@ -72,6 +73,9 @@ Ba'zi skriptlar katta ma'lumot keshlariga (`/tmp/claude-0/...`: oltin M1/kunlik,
 - Spred ko'p testlarda doimiy faraz qilingan; haqiqiy spred vaqt bo'yicha o'zgaradi; kechikish/sirpanish stress bilan qisman qoplangan.
 - Natijalar tarixiy; 2018–2025-fevral oltin ma'lumoti MTF2 dan keyin to'liq "ishlatilgan": yangi g'oyalar uchun yangi (2025-mart dan keyingi) ma'lumot kerak.
 - Ochiq qolgan, tasdiqlanmagan trek: oltin/EURUSD da RSI-qaytish (C strategiyasi) 2023–2025 da qisqa muddatda yaxshi ko'ringan, IS da zarar edi; yangi juftlarda tasdiqlanmagan.
+
+## 9a. Oylik hisoblagich va forward kuzatuv
+`python tools/gold_monthly_check.py --add YYYY-MM NARX` oy oxirida SMA10 holatini (LONG/NAQD), 12 oylik momentum va mavsumiy oyni ko'rsatadi, qulflangan jurnalni (`forward_test/log.csv`) yuritadi. Qoidalar, baholash nuqtalari va amaliy qoidalar: `STRATEGY_FORWARD.md`. Hozirgi holat (2026-09): NAQD (narx SMA10 dan −4.6% past).
 
 ## 9. Portfel/risk natijalari (STRATEGY_PORTFOLIO.md, `reports/portfolio_results.md`)
 - **Oltin ulushi:** 60/40 portfelga 10% oltin qo'shish risk-moslashtirilgan natijani oz bo'lsa ham yaxshiladi (Sharpe +0.07, bootstrap p = 0.02; 2000 dan keyin +0.13, 1976–1999 da deyarli o'zgarishsiz). 20% oltin ikkala davrda ishonchli emas.
