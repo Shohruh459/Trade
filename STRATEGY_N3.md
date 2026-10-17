@@ -47,4 +47,4 @@ Kunlik chegara g'oyasining o'zi uchun: chegarasiz (cheksiz savdo) bilan solishti
 - **FAIL:** qoida rad etiladi; parametrlarni "yaxshilash" taqiqlanadi. Hisobot to'liq e'lon qilinadi, shuningdek tasodifiy nazorat natijasi ("kirish signali ustunlik beryaptimi?") ochiq aytiladi.
 
 ## 8. O'zgartirishlar jurnali
-(hozircha bo'sh)
+- 2026-10-17: sinov ishga tushirildi (backtest/n3.py, reports/n3_results.md). Natija: **FAIL** (C1–C6 hammasi bajarilmadi). Qoida, parametrlar va mezonlarga o'zgartirish kiritilmadi. Amalga oshirish tafsiloti: ±10% chegara pozitsiya ichida ham stop/TP darajasini qisqartirish orqali qo'llandi; tasodifiy nazoratda savdolar bir-biri bilan ustma-ust tushishi mumkin va kunlik chegara qo'llanmagan.
