@@ -36,4 +36,4 @@ Oynalar soni; 5x ga yetgan kunlar (soni va %, Wilson 95%); sliv bo'lgan kunlar; 
 E'lon qilinadi; parametrlar "yaxshilanmaydi". Ustunlik topilmasa — qoida lotereya sifatida hujjatlanadi.
 
 ## 8. O'zgartirishlar jurnali
-(hozircha bo'sh)
+- 2026-10-17: sinov ishga tushirildi (backtest/news5x.py, reports/news5x_results.md). Reja o'zgartirilmadi. 2018-01 → 2025-02 oralig'ida kalendar bo'yicha 296 ta yangilik vaqti, M1 to'liq bo'lgan 293 tasi; asosiy variantda trend nolga teng bo'lgan 1 ta oyna o'tkazildi (292).
