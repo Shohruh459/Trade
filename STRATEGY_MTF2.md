@@ -64,4 +64,4 @@ Hammasi bajarilsa — **PASS**.
 Filtrsiz F1 (Lfull/T yo'q), faqat Lfull, faqat T, H4 mosligi, trailing 3 ATR, TP 3R bilan variantlar; long va short alohida; yillar bo'yicha taqsimot.
 
 ## 9. O'zgartirishlar jurnali
-(hozircha bo'sh)
+- 2026-10-17: sinov ishga tushirildi (reports/mtf2_results.md). Natija: **FAIL** (C1, C3, C5, C6 bajarilmadi). Qoida, parametrlar va mezonlarga o'zgartirish kiritilmadi. Faqat hisobot kodidagi keraksiz satrlar tozalandi (natijaga ta'sir qilmaydi).
