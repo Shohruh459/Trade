@@ -64,7 +64,8 @@ P_t = kunlik yopilish, r_t = P_t/P_{t−1} − 1. Signal s_t t kuni yopilishigac
 - **Stage 1 o'tmadi:** kunlik trend oltin uchun rad etiladi. Qolgan variantlar: ko'p aktivli portfel (agar Stage 2 o'tgan bo'lsa), yoki xulosa: "oddiy qoidalar bilan ishonchli edge topilmadi".
 - Hech qanday holatda sinalgan parametrlar natijaga qarab "yaxshilanmaydi" (qaytadan sinash faqat yangi oldindan yozilgan reja bilan).
 
-**O'zgartirishlar jurnali:** (hozircha bo'sh)
+**O'zgartirishlar jurnali:**
+- 2026-10-17 (sinov oldidan, sifat tekshiruvi): kunlik oltin yopilishi mustaqil manba (alshahri BID H1) bilan to'liq kunlarda (≥20 bar) kunlik daromadlar korrelyatsiyasi 0.998; hamma kunlar bo'yicha 0.987 (farq mustaqil manbaning to'liq bo'lmagan kunlaridan). Strategiya, parametr yoki mezonlarga o'zgartirish kiritilmadi. M1 bilan solishtirish mustaqil emas (bir manba).
 
 ## 8. Ma'lum xavflar va cheklovlar
 - **Hindsight:** oltin 2005–2011 va 2019–2025 yillarda kuchli trendda bo'lganini bilamiz; mustaqil trend kuzatuvlari soni kam (21 yilda bir necha uzun trend). Shuning uchun Stage 2 va timing testi qo'yilgan.
