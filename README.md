@@ -14,6 +14,7 @@ bilan, shu ma'lumotlarda, xarajatdan keyin ishonchli ustunlik topilmadi.** Quyid
 | EUR/USD va oltin, H1, 8 strategiya × 5 chiqish | Trend, breakout, qaytish, sessiya breakouti | In-sample mezonidan o'tgan variant: 0/40 (ikkala bozorda) |
 | Kunlik trend/momentum (oltin, 4 signal) + 9 aktivda tasdiqlash | TSMOM, ansambl, MA kesishuvi, Donchian | 4 hujayradan 0 PASS; sof Sharpe 0.11–0.31 (buy&hold 0.63) |
 | Ko'p vaqt oralig'i (M1·M5·M15·H1·H4) tuzilma tadqiqoti + chiqqan qoida (MTF2) | Trend shakllanishi, davom etish va qaytish | Qoida: **FAIL** (oltin +0.03 R, FX −0.02 R); tavsifiy topilmalar bor |
+| Oltin: portfeldagi roli, xavfni kamaytirish, fundamental omillar (oylik, 50 yil) | 60/40 ga oltin qo'shish; 10 oylik SMA filtri; real foiz/dollar/qiymat/inflyatsiya/mavsumiylik | 10% oltin: Sharpe +0.07 (p=0.02); **SMA10 filtri drawdownni ~2 baravar kamaytirdi**; fundamental predikator: **yo'q** |
 
 ## 2. Nimani o'rgandik (tavsifiy topilmalar, takrorlangan)
 - H1 trend boshlanganda M1, M5, M15 hammasi shu tomonda bo'lsa va H1 "trendli" (Kaufman ER ≥ 0.30) bo'lsa, trend **uzoqroq davom etadi** (mediana ~40–59 H1 bar ga qarshi 21–33; ikkala davrda ham p < 0.02). Lekin buni xarajatdan keyin foydaga aylantirib bo'lmadi (MTF2).
@@ -72,5 +73,8 @@ Ba'zi skriptlar katta ma'lumot keshlariga (`/tmp/claude-0/...`: oltin M1/kunlik,
 - Natijalar tarixiy; 2018–2025-fevral oltin ma'lumoti MTF2 dan keyin to'liq "ishlatilgan": yangi g'oyalar uchun yangi (2025-mart dan keyingi) ma'lumot kerak.
 - Ochiq qolgan, tasdiqlanmagan trek: oltin/EURUSD da RSI-qaytish (C strategiyasi) 2023–2025 da qisqa muddatda yaxshi ko'ringan, IS da zarar edi; yangi juftlarda tasdiqlanmagan.
 
-## 9. Keyingi ish
-`STRATEGY_PORTFOLIO.md`: savdo signali emas, **xavfni boshqarish va fundamental omillar** (oltinning portfeldagi roli, trend filtri bilan drawdown kamaytirish, real foiz/dollar/mavsumiylik bo'yicha o'rta muddatli bashorat) uchun oldindan yozilgan reja.
+## 9. Portfel/risk natijalari (STRATEGY_PORTFOLIO.md, `reports/portfolio_results.md`)
+- **Oltin ulushi:** 60/40 portfelga 10% oltin qo'shish risk-moslashtirilgan natijani oz bo'lsa ham yaxshiladi (Sharpe +0.07, bootstrap p = 0.02; 2000 dan keyin +0.13, 1976–1999 da deyarli o'zgarishsiz). 20% oltin ikkala davrda ishonchli emas.
+- **Xavfni kamaytirish:** oltin uchun 10 oylik SMA filtri (narx SMA dan pastda bo'lsa naqd) maksimal drawdownni ~2 baravar kamaytirdi (62% → 31%, 39% → 22%), Sharpe yomonlashmadi, yilida ~1.3 marta almashtirish. Vol-maqsad ishlamadi.
+- **Fundamental omillar:** real foiz, dollar, qiymat va inflyatsiya hech qanday OOS bashorat bermadi; faqat oltin momentumi statistik ahamiyatli, lekin "ishora" qoidasi bilan buy&hold'dan farq qilmadi. Sentyabr–fevral mavsumiyligi (+0.97%/oy) ikkala davrda barqaror, lekin ko'p test tuzatmasidan o'tmadi.
+- **Ehtiyot:** oylik o'rtacha narxlar va approksimatsiyalar; nisbiy solishtirish ishonchli, mutlaq raqamlar emas.
