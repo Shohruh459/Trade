@@ -37,4 +37,4 @@ Jami oynalar soni; 10$ ga yetgan foizi; sliv foizi; ikkalasi ham bo'lmagan (5 ku
 Natija e'lon qilinadi. Agar 10$ ga yetish foizi ~10% ga yaqin va o'rtacha yakuniy balans 1$ dan past bo'lsa — qoida ijobiy kutilgan qiymatga ega emas (martingale xususiyati tasdiqlanadi). Parametrlarni "yaxshilash" yo'q.
 
 ## 8. O'zgartirishlar jurnali
-(hozircha bo'sh)
+- 2026-10-17: sinov ishga tushirildi (backtest/martingale.py, reports/martingale_results.md). Reja o'zgartirilmadi. Amalga oshirish tafsiloti: pog'ona to'ldirish tartibi 4-bo'limdagidek; 8 va 10 pog'onali variantlar 9 bilan bir xil chiqdi (sliv 8-pog'onagacha yetmasdan sodir bo'ladi).
