@@ -37,6 +37,9 @@ class Config:
     daily_loss_limit: float = 0.03
     max_drawdown: float = 0.15
     max_leverage: float = 30.0
+    pip: float = PIP                  # price units per pip (EURUSD 0.0001, XAUUSD 0.01)
+    lot_units: float = 100_000        # units per standard lot (EURUSD 100000, XAUUSD 100 oz)
+    min_units: float = 1000           # smallest tradable size
 
 
 def run(df: pd.DataFrame, signal: np.ndarray, atr: np.ndarray, cfg: Config = Config()):
@@ -46,8 +49,8 @@ def run(df: pd.DataFrame, signal: np.ndarray, atr: np.ndarray, cfg: Config = Con
     c = df["close"].to_numpy()
     idx = df.index
     hours, wdays, days = idx.hour.to_numpy(), idx.dayofweek.to_numpy(), idx.normalize().to_numpy()
-    s = cfg.spread_pips * PIP
-    slip = cfg.slippage_pips * PIP
+    s = cfg.spread_pips * cfg.pip
+    slip = cfg.slippage_pips * cfg.pip
 
     equity = cfg.start_balance
     peak = equity
@@ -60,7 +63,7 @@ def run(df: pd.DataFrame, signal: np.ndarray, atr: np.ndarray, cfg: Config = Con
         nonlocal equity, peak, pos
         d = pos["dir"]
         gross = (price - pos["entry"]) * d * pos["units"]
-        comm = cfg.commission_per_lot * pos["units"] / 100_000
+        comm = cfg.commission_per_lot * pos["units"] / cfg.lot_units
         pnl = gross - comm
         equity += pnl
         peak = max(peak, equity)
@@ -134,7 +137,7 @@ def run(df: pd.DataFrame, signal: np.ndarray, atr: np.ndarray, cfg: Config = Con
                 entry = o[i] + s + slip if sig == 1 else o[i] - slip
                 risk_amt = equity * cfg.risk_pct
                 units = min(risk_amt / sl_dist, equity * cfg.max_leverage / entry)
-                if units >= 1000:
+                if units >= cfg.min_units:
                     pos = {
                         "dir": int(sig), "entry": entry, "units": units, "time": idx[i],
                         "sl": entry - sig * sl_dist,
