@@ -88,3 +88,4 @@ Ba'zi skriptlar katta ma'lumot keshlariga (`/tmp/claude-0/...`: oltin M1/kunlik,
 - **N1 (ko'p aktivli oylik SMA10 portfel): PASS.** 1976–2026: CAGR 9.2%, Sharpe 0.96, maksimal drawdown 12.7% (teng vaznli buy&hold: 38%), foydali oylar 63.5%, eng yomon oy −9.5%. 1 oy kechiktirilgan variant ham o'tdi (drawdown 18.4%). Xavfni arzon kamaytiradi, daromadni oshirmaydi. Forward kuzatuv kerak. `reports/n1_results.md`.
 - **N3 (oltin M1 swing-trend + ATR filtri + kunlik ±10%): FAIL.** Xarajatdan keyin o'rtacha −0.15 R, yutuq 40%, tasodifiy kirishdan farq yo'q (p=0.86); 1% riskda hisob deyarli to'liq yo'qoladi. Kunlik ±10% chegara deyarli ishlamadi (4 kun, hammasi −10%). `reports/n3_results.md`.
 - N2 (yangiliklar) hali ishga tushirilmagan.
+- N1 uchun oylik hisoblagich: `tools/n1_monthly_check.py` (forward kuzatuv, `STRATEGY_FORWARD.md` 9-bo'lim).

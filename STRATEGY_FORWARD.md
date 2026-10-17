@@ -41,3 +41,9 @@ Backtest oylik **o'rtacha** narxlarda o'tkazilgan; live'da oy oxiri yopilishi is
 
 ## 8. O'zgartirishlar jurnali
 (hozircha bo'sh)
+
+
+## 9. N1 ko'p aktivli portfel: forward kuzatuv (qo'shimcha, 2026-10-17)
+`STRATEGY_NEXT.md` dagi N1 (PASS) uchun alohida kuzatuv: `tools/n1_monthly_check.py`, ma'lumot `forward_test/n1_prices.csv`, qulflangan log `forward_test/n1_log.csv`, hisobot `forward_test/n1_latest.md`. Qoida o'zgarmagan: har aktiv uchun narx > 10 oylik o'rtacha → LONG, vazn 1/5, qolgani naqd, xarajat 10 b.p.
+Amalga oshirish farqlari: aksiya signali S&P 500 NARX indeksida (backtest to'liq daromadda); obligatsiya 10y foizdan qurilgan indeks (durasiya 7.5). Boshlanish: **2026-09 oy oxiri** signali; unga 2026-09 uchun 10y foiz kerak (datasetda yo'q, `--y10` bilan kiritiladi). Baholash: kamida 12 oy qog'ozda; mezon: drawdown buy&hold dan ≥40% kam va Sharpe ≥ buy&hold −0.05 (STRATEGY_NEXT 3.4 d).
+Har oy: `python tools/n1_monthly_check.py --add YYYY-MM --spx X --y10 Y --gold G --wti W --gas H`.
