@@ -69,4 +69,4 @@ Bir nechta hujayra o'tsa, afzallik: eng oddiy (eng kam shartli), keyin eng yuqor
 - Tahlil o'zi "naqsh topish" bo'lgani uchun tasodifiy topilmalar xavfi katta; shuning uchun qulflash protokoli (3-bo'lim).
 
 ## 10. O'zgartirishlar jurnali
-(hozircha bo'sh)
+- 2026-10-17: Stage 1 (Discovery) natijasi: nomzod qoida yo'q (32 testdan 0 ta FDR q≤0.10 dan o'tdi; reports/mtf_discovery.md, commit 8c8dc2d). Validation faqat tavsifiy (6A) takrorlash uchun ishlatildi (reports/mtf_validation.md); 32 hujayrali jadval Validation'da ko'rsatilmadi. **Final (2023-01 → 2025-02) va FX tasdiqlash ishlatilmadi (ko'rilmagan).** Strategiya, ta'rif yoki mezonlarga o'zgartirish kiritilmadi.

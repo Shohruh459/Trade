@@ -272,5 +272,25 @@ def main():
         print("\n".join(out))
 
 
+def validation_descriptive():
+    """Stage 2 with an empty candidate list: only replicate the descriptive findings (6A); the 32-cell table is deliberately NOT shown."""
+    B = load_gold_B()
+    ev_all = pd.read_parquet("/tmp/claude-0/mtf_events.parquet")
+    lo, hi = PERIODS["validation"]
+    E = ev_all[(ev_all.t >= pd.Timestamp(lo)) & (ev_all.t <= pd.Timestamp(hi) + pd.Timedelta(days=1))]
+    out = [f"# MTF tadqiqot: validation ({lo} … {hi}), faqat tavsifiy takrorlash\n",
+           f"Discovery'da nomzod qoida chiqmadi (reports/mtf_candidates_discovery.json = []), shuning uchun Validation'da qoida sinalmaydi. "
+           f"Faqat tavsifiy topilmalar takrorlanadi (6A). Hodisalar: F1 {int((E.fam=='F1').sum())}, F2 {int((E.fam=='F2').sum())}.\n"]
+    reg, nreg = regression(B, lo, hi)
+    out += ["\n## 6A.1 Bog'liqlik regressiyasi (Validation)\n", f"N = {nreg}\n", fmt(reg) + "\n"]
+    for title, d in descriptive(E, B):
+        out += [f"\n## 6A. {title}\n", fmt(d) + "\n"]
+    Path("reports/mtf_validation.md").write_text("\n".join(out))
+    print("\n".join(out))
+
+
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1 and sys.argv[1] == "validation":
+        validation_descriptive()
+    else:
+        main()
