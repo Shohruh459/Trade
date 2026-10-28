@@ -41,4 +41,4 @@ Filtrsiz (xarajat-nisbati filtrisiz); ATR_H1 ≥ 5× va ≥ 12× spred; risk 0.2
 PASS: dastlabki, demo/forward ≥ 3 oy (yangi ma'lumotda), real pul faqat kichik risk bilan. FAIL: rad etiladi; hisobot to'liq e'lon qilinadi.
 
 ## 9. O'zgartirishlar jurnali
-(hozircha bo'sh)
+- 2026-10-17: sinov ishga tushirildi (backtest/m15.py, reports/m15_results.md). Natija: **FAIL** (C1–C7 hammasi bajarilmadi). Qoida va mezonlarga o'zgartirish kiritilmadi.
