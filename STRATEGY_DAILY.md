@@ -36,4 +36,4 @@ Hammasi bajarilsa — "micro hisob (demo) uchun tayyorlashga arziydi (dastlabki)
 Qatlam savdolar tartibiga bog'liq (sham ichidagi tartib taxmin), kunlik chegara ochiq savdo o'rtasida emas yopilgandan keyin tekshiriladi (real EA da floating bo'yicha ham tekshirish mumkin), spred doimiy, sirpanish yo'q; kirish signali ilgari FAIL bo'lgan.
 
 ## 8. O'zgartirishlar jurnali
-(hozircha bo'sh)
+- 2026-11-04: sinov ishga tushirildi (backtest/daily.py, reports/daily_results.md). Natija: **FAIL** (D1–D5 hammasi bajarilmadi). Reja va mezonlarga o'zgartirish kiritilmadi. Eslatma: m15.py ga `maxtr` va `losscd` parametrlari qo'shildi (standart qiymatlar eski natijalarni o'zgartirmaydi; tekshirildi: 795 savdo, −0.0622 R).
