@@ -37,4 +37,4 @@ PASS: demo EA spetsifikatsiyasi; FAIL: rad etiladi, parametrlar "yaxshilanmaydi"
 Oldingi yangilik sinovlari (`STRATEGY_NEXT.md` N2, `STRATEGY_NEWS_FULLMARGIN_5X.md`) ustunlik topmagan: yo'nalishni bashorat qilish ham, trend bo'yicha full margin ham.
 
 ## 9. O'zgartirishlar jurnali
-(hozircha bo'sh)
+- 2026-11-04: sinov ishga tushirildi (backtest/straddle.py, reports/straddle_results.md). Natija: **O'TMADI** (S1–S4 bajarilmadi, S5 bajarildi). Reja va mezonlarga o'zgartirish kiritilmadi.
