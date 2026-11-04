@@ -23,4 +23,4 @@ c) Sezgirlik: TP $9 va $30 va $60; risk $5 va $20; stress xarajat; ushlash 10 va
 M1 BID ma'lumot, konservativ ijro taxminlari (`STRATEGY_STRADDLE.md` 6-bo'lim); 293 hodisa; yo'llar kesishadi (mustaqil emas); real brokerda yangilik paytida requote/spred; natija lotereya ehtimolini ko'rsatadi, foyda isboti emas.
 
 ## 5. O'zgartirishlar jurnali
-(hozircha bo'sh)
+- 2026-11-04: sinov ishga tushirildi (backtest/straddle10x.py, reports/straddle10x_results.md). Reja o'zgartirilmadi.
