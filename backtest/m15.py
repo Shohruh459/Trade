@@ -17,13 +17,13 @@ P = dict(minmult=8.0, tp=2.0, risk=0.005, side=0, news=1, sess="both", stressmul
 
 
 class Data:
-    def __init__(self, m1, spread, stress_spread, block_news=True):
+    def __init__(self, m1, spread, stress_spread, block_news=True, dly=None):
         self.spread, self.stress = spread, stress_spread
         agg = {"open": "first", "high": "max", "low": "min", "close": "last"}
         m15 = m1.resample("15min").agg(agg).dropna()
         h1 = m1.resample("1h").agg(agg).dropna()
         h4 = m1.resample("4h").agg(agg).dropna()
-        dly = m1.resample("1D").agg(agg).dropna()
+        dly = m1.resample("1D").agg(agg).dropna() if dly is None else dly
         self.t = m15.index
         self.o, self.h, self.l, self.c = (m15[x].to_numpy(float) for x in ("open", "high", "low", "close"))
         close_t = (self.t + pd.Timedelta("15min")).to_numpy()

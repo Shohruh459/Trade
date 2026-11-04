@@ -28,11 +28,11 @@ def news_windows():
 
 
 class Data:
-    def __init__(self):
-        m1 = load()
+    def __init__(self, m1=None, dly=None):
+        m1 = load() if m1 is None else m1
         agg = {"open": "first", "high": "max", "low": "min", "close": "last"}
         h4 = m1.resample("4h").agg(agg).dropna()
-        dly = m1.resample("1D").agg(agg).dropna()
+        dly = m1.resample("1D").agg(agg).dropna() if dly is None else dly
         self.t = h4.index
         c = h4.close
         pc = c.shift()
