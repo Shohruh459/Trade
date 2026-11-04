@@ -13,4 +13,4 @@ H4 breakout (`h4b.py`), H4 EMA20 reclaim (`h4.py`), M15 breakout (`m15.py`), M5 
 **Qaror mezoni yo'q.** Natija nol N bilan ham chiqishi mumkin; shuning uchun xulosa "bu oylarda qaysi qoida foyda/zarar berdi" bilan cheklanadi.
 
 ## O'zgartirishlar jurnali
-(hozircha bo'sh)
+- 2026-11-04: tekshiruv bajarildi (backtest/oos2026.py, reports/oos2026_results.md). Reja va qoidalarga o'zgartirish kiritilmadi. Kod o'zgarishi: h4.Data va m15.Data tashqi M1/D1 qabul qiladi (standart xatti-harakat o'zgarmadi; 197 savdo tekshirildi).
