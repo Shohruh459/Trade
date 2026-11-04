@@ -32,4 +32,4 @@ E'lon qilinadi; parametrlar o'zgartirilmaydi. Grid/martingale xususiyati: kichik
 EA muallifi `COMMERCIALIZATION_GUIDE.md` da backtestlarga ishonmaslikni yozgan; bu sinov ham shu cheklovlarni tan oladi.
 
 ## 9. O'zgartirishlar jurnali
-(hozircha bo'sh)
+- 2026-11-04: sinov ishga tushirildi (backtest/gridea.py, reports/gridea_results.md). Natija: asosiy (Sell-only, .set) **O'TMADI** (G1–G6 hammasi bajarilmadi; hisob 2019 da yo'qoldi). Reja va mezonlarga o'zgartirish kiritilmadi. Eslatma: M1 ma'lumot qayta yuklandi (yangi muhit), davr 2018-01 → 2025-02 ga kesilgan.
