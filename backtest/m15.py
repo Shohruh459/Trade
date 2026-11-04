@@ -13,7 +13,7 @@ from backtest.ldn import ema, load
 
 DEC = ("2019-01-01", "2025-03-01")
 HALF = {"2019-21": ("2019-01-01", "2022-01-01"), "2022-25": ("2022-01-01", "2025-03-01")}
-P = dict(minmult=8.0, tp=2.0, risk=0.005, side=0, news=1, sess="both", stressmult=1.0)
+P = dict(minmult=8.0, tp=2.0, risk=0.005, side=0, news=1, sess="both", stressmult=1.0, maxtr=2, losscd=3)
 
 
 class Data:
@@ -96,7 +96,7 @@ def trade(e, dr, s, tpm, o, h, l, c, rel, contig, cost):
 
 
 @njit(cache=True)
-def run_signals(o, h, l, c, U, L, atr, bias, rel, tns, dayid, dow, mod, contig, blocked, cost, minatr, tpm, news, side, s0, s1):
+def run_signals(o, h, l, c, U, L, atr, bias, rel, tns, dayid, dow, mod, contig, blocked, cost, minatr, tpm, news, side, s0, s1, maxtr, losscd):
     n = len(o)
     ti = np.empty(n, np.int64); td = np.empty(n, np.int64); tr = np.empty(n); tx = np.empty(n, np.int64); ts = np.empty(n)
     nt = 0
@@ -110,7 +110,7 @@ def run_signals(o, h, l, c, U, L, atr, bias, rel, tns, dayid, dow, mod, contig, 
         if dayid[e] != cur_day:
             cur_day = dayid[e]; cnt = 0
         m = mod[e]
-        if m < s0 or m >= s1 or dow[e] > 4 or (not contig[e]) or (news == 1 and blocked[e]) or bias[j] == 0 or cnt >= 2 or tns[e] < cd_until or atr[j] != atr[j] or atr[j] < minatr or U[j] != U[j]:
+        if m < s0 or m >= s1 or dow[e] > 4 or (not contig[e]) or (news == 1 and blocked[e]) or bias[j] == 0 or cnt >= maxtr or tns[e] < cd_until or atr[j] != atr[j] or atr[j] < minatr or U[j] != U[j]:
             j += 1
             continue
         d = 0
@@ -126,7 +126,7 @@ def run_signals(o, h, l, c, U, L, atr, bias, rel, tns, dayid, dow, mod, contig, 
         cnt += 1
         if r < 0:
             losses += 1
-            if losses >= 3:
+            if losses >= losscd:
                 cd_until = tns[xb] + 24 * 3600 * 10 ** 9 + 15 * 60 * 10 ** 9
                 losses = 0
         else:
@@ -154,7 +154,7 @@ def run(D, stress=False, **kw):
     p = {**P, **kw}
     cost = D.stress if stress else D.spread
     s0, s1 = {"both": (420, 960), "london": (420, 660), "overlap": (720, 960)}[p["sess"]]
-    ti, td, tr, tx, ts = run_signals(D.o, D.h, D.l, D.c, D.U, D.L, D.atr, D.bias, D.rel, D.tns, D.dayid, D.dow, D.mod, D.contig, D.blocked, cost, p["minmult"] * D.spread, p["tp"], p["news"], p["side"], s0, s1)
+    ti, td, tr, tx, ts = run_signals(D.o, D.h, D.l, D.c, D.U, D.L, D.atr, D.bias, D.rel, D.tns, D.dayid, D.dow, D.mod, D.contig, D.blocked, cost, p["minmult"] * D.spread, p["tp"], p["news"], p["side"], s0, s1, p["maxtr"], p["losscd"])
     df = pd.DataFrame({"i": ti, "dir": td, "R": tr, "x": tx, "s": ts})
     df["t"] = D.t[df.i.to_numpy()]
     df["date"] = df.t.dt.normalize()
