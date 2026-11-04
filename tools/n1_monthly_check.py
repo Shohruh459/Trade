@@ -6,7 +6,7 @@ Equity uses the S&P 500 PRICE index (backtest used total return; dividends ignor
 (duration 7.5), gold/WTI/natgas use prices.
 Usage:
   python tools/n1_monthly_check.py
-  python tools/n1_monthly_check.py --add 2026-10 --spx 7800 --y10 4.5 --gold 4350 --wti 90 --gas 3.1   # any subset of fields
+  python tools/n1_monthly_check.py --add 2026-10 --spx 7800 --y10 4.5 --gold 4350 --wti 90 --natgas 3.1   # any subset of fields
 """
 import argparse
 from pathlib import Path
