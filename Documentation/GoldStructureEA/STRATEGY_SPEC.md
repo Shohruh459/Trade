@@ -1,6 +1,6 @@
 # GoldStructureEA: STRATEGY_SPEC (qoidalar spetsifikatsiyasi)
 
-Holat: **LOYIHA v3 (DRAFT) — foydalanuvchi ko'rib chiqishi va muzlatishga alohida ruxsati kutilmoqda; MUZLATILMAGAN.** **Kod yozilmagan** (kod yozishga muzlatishdan keyin ham alohida ruxsat kerak). Hech bir raqam "natija" emas: savdolar soni, g'alaba ulushi va daromad faqat tarixiy backtestda o'lchanadi. **Test natijasiga qarab parametrlar o'zgartirilmaydi.**
+Holat: **MUZLATILGAN v3 (2026-11-20; foydalanuvchi "Boshlaymiz" deb ruxsat berdi).** O'zgartirish faqat 18-bo'limdagi jurnal orqali, sababi bilan; muzlatilgan qoidalarni natijaga qarab o'zgartirish taqiqlanadi. **Kod yozilmagan; kod yozishga alohida ruxsat kerak.** Hech bir raqam "natija" emas: savdolar soni, g'alaba ulushi va daromad faqat tarixiy backtestda o'lchanadi. **Test natijasiga qarab parametrlar o'zgartirilmaydi.**
 v3: foydalanuvchining 6 ta qarori (A8 (b), zona tekshiruvi simmetriyasi, signal eskirishi, kunlik limit EA-only, stress hisoboti, favqulodda tartib tiklanishi) kiritildi; BUY/SELL simmetriyasi yagona formulada berildi; **har parametr uchun qiymat/birlik/hisoblash usuli** 13-bo'limda; o'zgarishlar ro'yxati 17-bo'limda.
 
 ## 0. Konventsiyalar
@@ -190,4 +190,4 @@ Hisoblash: BUY — kirish Ask = Bid + S, chiqish Bid; SELL — kirish Bid, chiqi
 10. Yangilik ma'lumoti (11.5) ixchamlashtirildi (mazmun v2 bilan bir xil).
 
 ## 18. O'zgartirishlar jurnali (muzlatilgandan keyin)
-(hozircha bo'sh; muzlatishga foydalanuvchi alohida ruxsat bergandan keyin to'ldiriladi)
+- 2026-11-20: v3 muzlatildi (qoralama commit `d6f01d9` asosida; xeshlar `FREEZE_MANIFEST.md` da). Mazmun o'zgartirilmadi.

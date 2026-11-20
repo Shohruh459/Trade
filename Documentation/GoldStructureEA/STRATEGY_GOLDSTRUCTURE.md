@@ -1,6 +1,6 @@
 # GoldStructureEA: pre-registered sinov rejasi
 
-Holat: **LOYIHA v3 (DRAFT) — foydalanuvchi ko'rib chiqishi va muzlatishga alohida ruxsati kutilmoqda; MUZLATILMAGAN.** Muzlatishdan keyin ham kod yozishga alohida ruxsat kerak. Hech qanday kod yozilmagan; natijaga qarab parametrlar o'zgartirilmaydi. Qoidalar `STRATEGY_SPEC.md` (v2) bo'yicha; parametrlar sozlanmaydi. O'zgartirish faqat 12-bo'limdagi jurnalga.
+Holat: **MUZLATILGAN v3 (2026-11-20; foydalanuvchi "Boshlaymiz" deb ruxsat berdi).** O'zgartirish faqat 12-bo'limdagi jurnal orqali, sababi bilan; muzlatilgan qoidalarni natijaga qarab o'zgartirish taqiqlanadi. **Kod yozilmagan; kod yozishga alohida ruxsat kerak.** Hech qanday kod yozilmagan; natijaga qarab parametrlar o'zgartirilmaydi. Qoidalar `STRATEGY_SPEC.md` (v2) bo'yicha; parametrlar sozlanmaydi. O'zgartirish faqat 12-bo'limdagi jurnalga.
 v3: foydalanuvchining 6 ta qarori kiritildi (o'zgarishlar ro'yxati 13-bo'limda). v2 dagi 10 ta aniqlashtirish saqlangan.
 
 ## 1. Savol
@@ -65,7 +65,7 @@ M1 BID (tick emas), doimiy spred, sirpanish yo'q (asosiy — optimistik), sham i
 3. Natija yuboriladi; MQL5 faqat PASS bo'lsa.
 
 ## 12. O'zgartirishlar jurnali
-(hozircha bo'sh; muzlatishga foydalanuvchi alohida ruxsat bergandan keyin to'ldiriladi)
+- 2026-11-20: v3 muzlatildi (qoralama commit `d6f01d9` asosida; xeshlar `FREEZE_MANIFEST.md` da). Mazmun o'zgartirilmadi. Python backtest kodlanishiga hali ruxsat berilmagan.
 
 ## 13. v2 → v3 o'zgarishlar ro'yxati (test rejasi)
 1. A8 qat'iy (b) (real tana ≥ 1.0×ATR(B−1)); N<100 bo'lsa parametr o'zgartirilmaydi, natija "xulosasiz" (4, 7-bo'lim).
