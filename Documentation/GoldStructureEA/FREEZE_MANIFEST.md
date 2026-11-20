@@ -8,5 +8,5 @@ Muzlatilgan fayllar (SHA-256, muzlatilgan holatdagi matn):
 
 Qoidalar:
 - Bu fayllar mazmuni natijaga qarab o'zgartirilmaydi. O'zgartirish faqat jurnalga yozilgan sababi va yangi manifest bilan; o'zgarishdan keyin xuddi shu 2018-04 → 2025-02 davrni qayta sinash taqiqlanadi (test rejasi 6-bo'lim).
-- **Kod yozishga ruxsat berilmagan.** Foydalanuvchi alohida, aniq ruxsat bergandan keyingina  va Python backtest yoziladi.
+- **Kod yozishga ruxsat berilmagan.** Foydalanuvchi alohida, aniq ruxsat bergandan keyingina yangilik kalendari qurilishi (`tools/build_news_calendar.py`) va Python backtest yoziladi.
 - Keyingi qadamlar (ruxsatdan keyin): (1) yangilik kalendari qurilishi; (2) backtest kodi (SPEC bo'yicha); (3) bir marta ishga tushirish; (4) natija hisoboti (Asosiy/Stress/Komissiya alohida); (5) MQL5 faqat PASS bo'lsa.
