@@ -1,6 +1,6 @@
 # GoldStructureEA: qabul qilingan qarorlar (foydalanuvchi) va ochiq masalalar
 
-Holat: qarorlar yozildi, **EA kodi yozilmagan**. Implementatsiya foydalanuvchi tasdig'idan keyin (6-bo'lim). Bu hujjat `STRATEGY_AUDIT_PROPOSAL.md` ning 3.2, 3.6, 3.7 (stop) va 3.8 (sessiya/limit) bandlarini yangilaydi.
+Holat (2026-11-20, yangilanish): foydalanuvchi **S1 sessiyasini tanladi**, A1–A18 default'larini boshlang'ich qaror sifatida qabul qildi (A1 aniqlashtirildi: stop masofasi 0.5–2.0×ATR(M15) dan tashqarida bo'lsa savdo o'tkaziladi, stop sun'iy o'zgartirilmaydi; A5 aniqlashtirildi: NY 17:00 da emas, undan oldin yopish mexanizmi, vaqt konfiguratsiyada, ochiq pozitsiya sessiya tugashi bilan darhol yopilmaydi). Yakuniy hujjatlar: `STRATEGY_SPEC.md` va `STRATEGY_GOLDSTRUCTURE.md` (loyiha, tasdiq kutilmoqda). Eski holat: qarorlar yozildi, **EA kodi yozilmagan**. Implementatsiya foydalanuvchi tasdig'idan keyin (6-bo'lim). Bu hujjat `STRATEGY_AUDIT_PROPOSAL.md` ning 3.2, 3.6, 3.7 (stop) va 3.8 (sessiya/limit) bandlarini yangilaydi.
 
 ## 1. Qabul qilingan qarorlar (foydalanuvchi, 2026-11-20)
 1. **H1 bias:** EMA50/200 **va** Market Structure ikkalasi bir yo'nalishni tasdiqlashi shart; mos kelmasa savdo yo'q. Faqat EMA asosida kirish **yo'q**.
