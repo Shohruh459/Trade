@@ -1,7 +1,7 @@
 # GoldStructureEA: pre-registered sinov rejasi
 
-Holat: **LOYIHA v2 (DRAFT) — foydalanuvchi tasdig'ini kutmoqda; MUZLATILMAGAN.** Tasdiqdan keyin **natijani ko'rishdan oldin** commit qilinadi va muzlatiladi. Hech qanday kod yozilmagan. Qoidalar `STRATEGY_SPEC.md` (v2) bo'yicha; parametrlar sozlanmaydi. O'zgartirish faqat 12-bo'limdagi jurnalga.
-v2: 10 ta aniqlashtirish (savol 5–8 va 6,7,8) shu hujjatning 2, 3, 4, 6, 7-bo'limlariga kiritilgan.
+Holat: **LOYIHA v3 (DRAFT) — foydalanuvchi ko'rib chiqishi va muzlatishga alohida ruxsati kutilmoqda; MUZLATILMAGAN.** Muzlatishdan keyin ham kod yozishga alohida ruxsat kerak. Hech qanday kod yozilmagan; natijaga qarab parametrlar o'zgartirilmaydi. Qoidalar `STRATEGY_SPEC.md` (v2) bo'yicha; parametrlar sozlanmaydi. O'zgartirish faqat 12-bo'limdagi jurnalga.
+v3: foydalanuvchining 6 ta qarori kiritildi (o'zgarishlar ro'yxati 13-bo'limda). v2 dagi 10 ta aniqlashtirish saqlangan.
 
 ## 1. Savol
 `STRATEGY_SPEC.md` dagi qoida oltinda (2018-04 → 2025-02) xarajatdan keyin **tasodifiy kirishdan ishonchli yaxshi** va yetarli barqaror natija beradimi? **Savdolar soni kutilmaydi**; backtest o'lchaydi (N < 100 bo'lsa "xulosasiz").
@@ -23,9 +23,10 @@ v2: 10 ta aniqlashtirish (savol 5–8 va 6,7,8) shu hujjatning 2, 3, 4, 6, 7-bo'
 
 ## 4. Simulyatsiya va xarajatlar (muzlatilgan) (savol 6, 9, 10)
 - Signal M5 yopilishida (spetsifikatsiya), kirish keyingi M5 ochilishida; **SL/TP M1 yo'li bo'yicha**; bir M1 shamda SL va TP ikkalasi tegsa — **stop birinchi**; gap bo'lsa ochilish narxida.
+- **Hisobotlar alohida:** (1) **Asosiy** ssenariy (spred $0.30, komissiya 0, slippage 0); (2) **Stress** ssenariy (spred $0.50, slippage kirish $0.10 va SL $0.10, komissiya 0); (3) **Komissiya sezgirligi** ($0.07/oz = $7/lot, asosiy xarajatlarga qo'shimcha). Birliklar $/oz; 1 lot = 100 oz: spred $0.30 = $30/lot, $0.50 = $50/lot; slippage $0.10 = $10/lot har bir tomonga.
 - **Spred ($/oz, to'liq aylanma):** asosiy **$0.30**, stress **$0.50**; Long — kirish Ask = Bid+S, chiqish Bid; Short — kirish Bid, chiqish Ask = Bid+S (SL/TP Short uchun Bid+S bo'yicha). 1 lot = 100 oz; $0.30/oz = $30/lot.
 - **Komissiya:** asosiy 0; sezgirlik $0.07/oz ($7/lot). **Slippage:** asosiy 0; stress: kirish $0.10/oz + stop-loss chiqishi $0.10/oz. **Swap:** NY 16:30 yopish bilan 0; "yopishsiz" sezgirlikda 3%/yil × qiymat × tunlar.
-- **Risk:** equity ning 1%, kompaundlangan, lot qadami cheklovi yo'q. **Kunlik −4% limit:** EA P&L (yopilgan sof natija + floating, komissiya va swap bilan), kun boshi NY 17:00, M1 adverse bo'yicha; breachda pozitsiya −4% narxida yopiladi, keyingi NY 17:00 gacha blok. **NY 16:30 yopish** muvaffaqiyatli deb olinadi (favqulodda holat backtestda modellashtirilmaydi); sessiya S1 (zoneinfo, DST mustaqil); bir vaqtda 1 pozitsiya; yangilik filtri `data/news/usd_high_impact.csv` bo'yicha.
+- **Risk:** hisob equity ning 1%, kompaundlangan, lot qadami cheklovi yo'q. **Kunlik −4% limit:** **faqat EA P&L** (yopilgan sof natija + floating, komissiya va swap bilan; boshqa EA va qo'lda pozitsiyalar kirmaydi), kun boshi NY 17:00, M1 adverse bo'yicha; breachda EA ning hamma pozitsiyasi −4% narxida yopiladi, keyingi NY 17:00 gacha blok. **NY 16:30 yopish** muvaffaqiyatli deb olinadi (favqulodda holat backtestda modellashtirilmaydi); sessiya S1 (zoneinfo, DST mustaqil); bir vaqtda 1 pozitsiya; yangilik filtri `data/news/usd_high_impact.csv` bo'yicha.
 - Barcha spetsifikatsiya qoidalari o'zgarishsiz (swing, BOS (A8 tanlangan variant), zona algoritmi, retest, P+M, signal eskirishi, stop filtri).
 
 ## 5. O'lchovlar
@@ -41,7 +42,7 @@ Maqsad: strukturaviy kirish (zona+retest+P+M) **bias bilan mos tasodifiy kirishd
 - **Parametrlarni qayta sozlash taqiqi:** bu reja bo'yicha **bitta tasdiqlovchi ishga tushirish** o'tkaziladi. Natijani ko'rgach parametrlarni (yoki ta'riflarni) o'zgartirib, **xuddi shu davrni (2018-04 → 2025-02) qayta sinash TAQIQLANADI**; sezgirlik (8-bo'lim) faqat tavsifiy va qaror uchun ishlatilmaydi. Har qanday o'zgartirish 12-bo'limga yoziladi va faqat **yangi, ko'rilmagan ma'lumotda** (masalan, 2026-07 dan keyingi davr, forward) tasdiqlanadi; shu davr ma'lumoti "ishlatilgan" deb belgilanadi. Ishga tushirish uchun kod commit xeshi va natija fayli hisobotga yoziladi.
 
 ## 7. Qaror mezonlari (hammasi shart; oltin, qaror davri)
-- **G1:** N ≥ 100; o'rtacha net R > 0 va bir tomonlama klasterlangan p ≤ 0.10. **N < 100 → "XULOSASIZ" va qoida o'tmagan hisoblanadi** (FX qo'shimcha dalil sifatida ko'rsatiladi, qarorni o'zgartirmaydi).
+- **G1:** N ≥ 100; o'rtacha net R > 0 va bir tomonlama klasterlangan p ≤ 0.10. **N < 100 → "XULOSASIZ" va qoida o'tmagan hisoblanadi; A8 yoki boshqa parametr o'zgartirilmaydi, natija o'zgarishsiz "xulosasiz" deb belgilanadi** (FX qo'shimcha dalil sifatida ko'rsatiladi, qarorni o'zgartirmaydi).
 - **G2:** stress (spred $0.50, slippage kirish+SL $0.10) da o'rtacha net R > 0.
 - **G3:** Dev, Val, Final har birida o'rtacha net R > 0 (davrda N < 15 bo'lsa "kam ma'lumot", o'tkazib yuboriladi, lekin kamida 2 davr baholanishi kerak).
 - **G4:** profit factor ≥ 1.2. **G5:** tasodifiy kirish nazoratida p ≤ 0.10. **G6:** maksimal drawdown ≤ 20% (1% risk).
@@ -64,4 +65,13 @@ M1 BID (tick emas), doimiy spred, sirpanish yo'q (asosiy — optimistik), sham i
 3. Natija yuboriladi; MQL5 faqat PASS bo'lsa.
 
 ## 12. O'zgartirishlar jurnali
-(hozircha bo'sh; tasdiqdan keyin to'ldiriladi)
+(hozircha bo'sh; muzlatishga foydalanuvchi alohida ruxsat bergandan keyin to'ldiriladi)
+
+## 13. v2 → v3 o'zgarishlar ro'yxati (test rejasi)
+1. A8 qat'iy (b) (real tana ≥ 1.0×ATR(B−1)); N<100 bo'lsa parametr o'zgartirilmaydi, natija "xulosasiz" (4, 7-bo'lim).
+2. Zona tekshiruvi simmetrik va barcha hisob faqat yopilgan shamlar bo'yicha (SPEC 4).
+3. Signal eskirishi: retest epizodi boshidan 12 M5 bar, keyingi ochilishda bajarilmasa eskiradi (SPEC 7).
+4. Kunlik −4%: faqat EA P&L (boshqa EA va qo'lda pozitsiyalar kirmaydi) (4-bo'lim).
+5. Asosiy, Stress va Komissiya sezgirligi **alohida hisobotlar**; birliklar va 1 lot qiymati (4-bo'lim).
+6. Favqulodda tartib va holatni saqlash/tiklash SPEC da; backtestda modellashtirilmaydi (4-bo'lim).
+7. BUY/SELL simmetriyasi SPEC da yagona formulada.

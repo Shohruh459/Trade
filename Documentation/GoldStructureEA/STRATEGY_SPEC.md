@@ -1,148 +1,193 @@
 # GoldStructureEA: STRATEGY_SPEC (qoidalar spetsifikatsiyasi)
 
-Holat: **LOYIHA v2 (DRAFT) — foydalanuvchi tasdig'ini kutmoqda; MUZLATILMAGAN.** Tasdiqlangandan keyin muzlatiladi; o'zgartirish faqat 15-bo'limdagi jurnal orqali, sababi bilan. **Kod yozilmagan.** Hech bir raqam "natija" emas: savdolar soni, g'alaba ulushi va daromad faqat tarixiy backtestda o'lchanadi.
-v2 o'zgarishi: foydalanuvchi 10 ta aniqlashtirish so'radi (1–10); javoblar tegishli bo'limlarga kiritildi va 14-bo'limda xaritalandi.
+Holat: **LOYIHA v3 (DRAFT) — foydalanuvchi ko'rib chiqishi va muzlatishga alohida ruxsati kutilmoqda; MUZLATILMAGAN.** **Kod yozilmagan** (kod yozishga muzlatishdan keyin ham alohida ruxsat kerak). Hech bir raqam "natija" emas: savdolar soni, g'alaba ulushi va daromad faqat tarixiy backtestda o'lchanadi. **Test natijasiga qarab parametrlar o'zgartirilmaydi.**
+v3: foydalanuvchining 6 ta qarori (A8 (b), zona tekshiruvi simmetriyasi, signal eskirishi, kunlik limit EA-only, stress hisoboti, favqulodda tartib tiklanishi) kiritildi; BUY/SELL simmetriyasi yagona formulada berildi; **har parametr uchun qiymat/birlik/hisoblash usuli** 13-bo'limda; o'zgarishlar ro'yxati 17-bo'limda.
 
 ## 0. Konventsiyalar
-- Aktiv: XAUUSD. Ichki hisob UTC da; sessiya/kun chegaralari mahalliy vaqt zonalarida (Europe/London, America/New_York), DST har zona uchun **mustaqil** (UK: mart oxirgi yakshanba 01:00 UTC → oktyabr oxirgi yakshanba 01:00 UTC; AQSh: mart 2-yakshanba 02:00 mahalliy → noyabr 1-yakshanba 02:00 mahalliy).
-- Faqat **to'liq yopilgan** barlar; **kelajak ma'lumoti ishlatilmaydi**, repaint yo'q. ATR(14) = oxirgi 14 ta yopilgan bar TR sining oddiy o'rtachasi (SMA).
-- Birlik: narx **AQSh dollari/untsiya** (XAUUSD: 1 punkt = $0.01; 1 lot = 100 oz; $0.30 = 30 punkt = 3 "pip" (0.10); 1 lot da $0.30/oz = $30).
+- Aktiv: XAUUSD. Ichki hisob UTC; sessiya/kun chegaralari mahalliy vaqt zonalarida (Europe/London, America/New_York), DST har zona uchun **mustaqil** (UK: mart oxirgi yakshanba 01:00 UTC → oktyabr oxirgi yakshanba 01:00 UTC; AQSh: mart 2-yakshanba 02:00 mahalliy → noyabr 1-yakshanba 02:00 mahalliy).
+- **Faqat to'liq yopilgan barlar**; kelajak ma'lumoti ishlatilmaydi, repaint yo'q. ATR(14) = oxirgi 14 ta yopilgan bar TR sining oddiy o'rtachasi (SMA), TR = max(High−Low, |High−oldingi Close|, |Low−oldingi Close|).
+- **Birlik:** narx = AQSh dollari/untsiya ($/oz). XAUUSD: 1 punkt = $0.01; 1 pip = $0.10 (10 punkt); 1 lot = 100 oz. Shuning uchun $1.00/oz narx harakati = 1 lot uchun $100.
 - Qaror vaqti: har yopilgan M5 bar yopilishida; kirish keyingi M5 bar ochilishida.
+- **BUY/SELL simmetriyasi:** barcha qoidalar `d ∈ {+1 (BUY/demand), −1 (SELL/supply)}` bilan yagona formulada yoziladi; faqat ijro narxi tomoni (BUY — Ask, SELL — Bid) bozor mexanikasi tufayli asimmetrik. Pozitsiya yo'nalishi `d`.
 
 ## 1. Swing (fractal)
-Bar i — swing-high, agar High[i] oldingi k va keyingi k barning High laridan qat'iy yuqori (swing-low nosimmetrik). Swing faqat i+k bar yopilgandan keyin ma'lum bo'ladi. **k: H1 = 3, M15 = 3, M5 = 2.**
+Bar i — **swing-high**, agar High[i] oldingi k va keyingi k barning High laridan qat'iy yuqori; **swing-low** — Low[i] oldingi/keyingi k barning Low laridan qat'iy past. Swing faqat i+k bar yopilgandan keyin ma'lum. k: H1 = 3, M15 = 3, M5 = 2. Belgi: `SW_d` — d=+1 uchun swing-high turi, d=−1 uchun swing-low turi (ya'ni yo'nalishni **buzadigan** daraja); `OP_d` — qarama-qarshi tur.
 
 ## 2. H1 bias (qaror 1)
-- **EMA bias:** oxirgi yopilgan H1 yopilishi > EMA50 va EMA50 > EMA200 → Long; < EMA50 va EMA50 < EMA200 → Short; aks holda yo'q.
-- **Struktura bias:** oxirgi 2 ta tasdiqlangan H1 swing-high va 2 ta swing-low: HH+HL → bullish; LH+LL → bearish; aralash → yo'q.
-- **Yakuniy bias:** ikkalasi bir yo'nalishda bo'lsa; aks holda **savdo yo'q**. Faqat EMA asosida kirish yo'q.
+- **EMA yo'nalishi `dE`:** oxirgi yopilgan H1: Close > EMA50 va EMA50 > EMA200 → +1; Close < EMA50 va EMA50 < EMA200 → −1; aks holda 0.
+- **Struktura yo'nalishi `dS`:** oxirgi 2 ta tasdiqlangan H1 swing-high va 2 ta swing-low: HH va HL → +1; LH va LL → −1; aks holda 0.
+- **Bias `d` = dE, agar dE = dS ≠ 0; aks holda savdo yo'q.** Faqat EMA asosida kirish yo'q.
 
-## 3. M15 BOS va impuls sharti (A8) — savol 1 javobi
-**Haqiqat (oldingi hujjatlarda):** v1 matnida impuls sharti **diapazon** (High−Low) ≥ 1.0×ATR(M15) edi, **tana emas**. Bu 41% M15 barlarda bajariladi (2018-04 → 2025-02, tavsifiy statistika, strategiya natijasi emas), ya'ni deyarli filtrlamaydi. "Oldingi 0.15 ATR qoidasi" GoldStructure hujjatlarida **yo'q**: 0.15×ATR faqat N3 tadqiqotida (`STRATEGY_N3.md`, minimal stop masofasi, ATR_H1) uchragan va bu strategiyaga aloqasi yo'q. Agar siz boshqa hujjatdagi qoidani nazarda tutgan bo'lsangiz, ko'rsating.
+## 3. M15 BOS va impuls (A8 — qaror 1)
+B — BOS bari (M15). `L*` — B−1 yopilgunga qadar tasdiqlangan (p+k ≤ B−1) oxirgi M15 `SW_d` swing darajasi (d=+1: swing-high High si; d=−1: swing-low Low si), p* — uning bar indeksi. Shartlar (hammasi):
+1. `d × (Close[B] − L*) > 0` va `d × (Close[B−1] − L*) ≤ 0` (**birinchi** yopilish bilan buzilish);
+2. `d × (Close[B] − Open[B]) > 0` (BOS shami yo'nalishda yopilgan);
+3. **Impuls (A8, b):** `abs(Close[B] − Open[B]) ≥ 1.0 × ATR14_M15[B−1]` — **real tana** (soya emas), ATR **BOS shamidan oldingi yopilgan** M15 bar (B−1) bo'yicha.
+Agar N < 100 bo'lsa, bu parametr **o'zgartirilmaydi**, natija "xulosasiz" deb belgilanadi (test rejasi 7-bo'lim). (a) diapazon va (c) tana ≥ 0.7×ATR faqat tavsifiy sezgirlik.
 
-**Variantlar (M15 barlarining ulushi, 2018-04 → 2025-02, ATR = oldingi yopilgan barda):** (a) diapazon ≥ 1.0×ATR: **41.2%** barlar (zaif filtr); (b) **real tana |Close−Open| ≥ 1.0×ATR: 12.7%** (qat'iy "displacement"); (c) real tana ≥ 0.7×ATR: 24.4%; (d) real tana ≥ 1.5×ATR: 4.7%. Median M15 ATR ≈ $1.86 (10–90%: $0.87–$3.96), ya'ni (b) tana ≥ ~$1.9 degani.
+## 4. Supply/Demand zona (A6) — aniq algoritm (kelajak ma'lumoti yo'q)
+B yopilgandan keyin, faqat B va undan oldingi **yopilgan** M15 barlar bo'yicha:
+1. **Buzilgan swing:** p* (3-bandda).
+2. **Impuls boshi S:** (p*, B−1] oralig'idagi barlar orasida d=+1 uchun **eng past Low**, d=−1 uchun **eng baland High** li bar; teng bo'lsa **eng oxirgisi**.
+3. **Zona sham Z:** i = S, S−1, S−2, … tartibida (ko'pi bilan S−5 gacha va i > p*) **birinchi sham, rangi d ga qarama-qarshi** (d=+1: bearish, Close < Open; d=−1: bullish, Close > Open). Topilmasa — zona yo'q (`no_zone`).
+4. **Zona oldindan buzilmaganligi (simmetrik tekshiruv, qaror 2):** `[Z, B−1]` oralig'idagi **hech bir M15 sham yopilishi** zonaning **uzoq chetidan** tashqarida bo'lmasligi shart: **Demand (d=+1):** hech bir Close < zona **pastki** chegarasi (Low[Z]); **Supply (d=−1):** hech bir Close > zona **yuqori** chegarasi (High[Z]). Aks holda zona yaratilmaydi (`pre_violated`).
+5. **Zona:** `[Lz, Hz] = [Low[Z], High[Z]]` (to'liq diapazon). Uzoq chet `Fz` = (d=+1: Lz; d=−1: Hz), yaqin chet `Nz` = (d=+1: Hz; d=−1: Lz).
+6. **Sifat filtri (A7):** `0.3 ≤ (Hz − Lz) / ATR14_M15[B−1] ≤ 1.5`, aks holda zona yaroqsiz (`bad_height`).
+**Yaratilish vaqti:** B yopilishi. **Bekor bo'lish:** (a) 96 M15 bar (24 soat) o'tsa; (b) keyingi M15 yopilishi `Fz` dan tashqarida (d=+1: Close < Lz; d=−1: Close > Hz); (c) 3-retest sodir bo'lsa; (d) savdo ochilsa; (e) yangi BOS yangi zona yaratsa (bitta faol zona, eng yangisi).
 
-**Taklif (qaror kutilmoqda, muzlatishdan oldin siz tanlaysiz):** **(b) real tana** — v2 default: `abs(Close − Open) ≥ 1.0 × ATR(M15)`. Sabab: sizning savolingiz tana nazarda tutilganini ko'rsatadi; tana impulsni (yo'nalishli yopilish) diapazondan yaxshiroq ifodalaydi (uzun soyali, ammo yopilishi zaif shamlarni chiqarib tashlaydi). Ta'siri: BOS signallari (va undan keyingi zonalar) ancha kamayadi (12.7% vs 41%); savdolar soni ko'p marta kamayishi mumkin; N < 100 bo'lib "xulosasiz" bo'lish xavfi oshadi. (c) — yumshoqroq alternativ; sezgirlik sifatida sinaladi.
-**ATR manbai:** BOS shami **kirmaydi**: ATR(14) BOS shamidan **bitta oldingi** yopilgan M15 barda (bar B−1) hisoblanadi — BOS shami o'zi ATR ni oshirmasligi va kelajak ma'lumoti kirmasligi uchun.
-
-**BOS ta'rifi (Long; Short nosimmetrik):** B — M15 bar, uning **yopilishi** B−1 yopilguncha tasdiqlangan oxirgi M15 swing-high H* dan yuqori (swing tasdig'i p+k ≤ B−1), B−1 yopilishi esa H* dan yuqori bo'lmagan (**birinchi** yopilish buzilishi) va A8 shart bajarilgan (BOS shami yo'nalishi bias bilan mos: Long uchun Close > Open).
-
-## 4. Supply/Demand zona (A6) — savol 2 javobi: aniq algoritm
-Faqat B shami yopilgandan keyin, faqat B va undan oldingi barlar ma'lumoti bilan (kelajak yo'q). **Long (demand):**
-1. **Buzilgan swing:** p* — H* ning bar indeksi (B−1 yopilishida tasdiqlangan eng oxirgi M15 swing-high).
-2. **Impuls boshi S:** (p*, B−1] oralig'idagi barlar orasida **eng past Low** li bar; teng bo'lsa **eng oxirgisi**. (p* dan keyin kamida k=3 bar bor, shuning uchun oraliq bo'sh emas.)
-3. **Zona sham Z:** i = S, S−1, S−2, … (ko'pi bilan S−5 gacha, va i > p*) tartibida **birinchi bearish (Close < Open) M15 sham**. Topilmasa — zona yo'q (hodisa "no_zone" deb qayd etiladi).
-4. **Tekshiruv (zona allaqachon buzilmagan):** (Z, B−1] oralig'ida hech bir M15 **yopilishi** zona Low dan pastda bo'lmasligi shart; bo'lsa zona yaratilmaydi ("pre_violated").
-5. **Zona = [Low[Z], High[Z]]** (to'liq diapazon, A6). Yaratilish vaqti: B yopilishi. **Sifat filtri (A7):** 0.3 ≤ (High[Z]−Low[Z]) / ATR(M15, B−1) ≤ 1.5, aks holda zona yaroqsiz ("bad_height").
-**Short (supply):** nosimmetrik: eng past → eng baland High (S), bearish → bullish sham, "Low dan pastda" → "High dan yuqorida".
-**Bekor bo'lish:** (a) 96 M15 bar (24 soat) o'tsa; (b) M15 yopilishi zonaning qarshi tomonidan tashqarida (Long: yopilish < zona Low; Short: yopilish > zona High); (c) 3-retest sodir bo'lsa; (d) savdo ochilsa; (e) yangi BOS yangi zona yaratsa (bitta faol zona, eng yangisi).
-
-## 5. Zona kengligi filtri (A7) — savol 3 javobi
-- **Chegaralar:** zona balandligi 0.3–1.5 × ATR(M15, B−1). **Sabab (a priori, optimallashtirilmagan):** 0.3 dan past — zona deyarli bitta narx darajasi; M5 shovqini va spred (balandlik ~ $0.5 atrofida) zona ichida "tegish" va "qamrash" ma'nosiz qiladi. 1.5 dan yuqori — zona "zona" emas, butun harakat diapazoni; stop masofasi (zona balandligi + 0.2×ATR buffer) A1 dagi 2.0×ATR yuqori chegarasiga yaqinlashadi va TP 2R juda uzoq bo'ladi.
-- **"Oldingi 1.0 ATR chegarasi":** zona kengligi uchun oldin 1.0 ATR chegarasi **bo'lmagan**: v1 hujjatlarda ham 0.3–1.5 edi. 1.0×ATR faqat BOS impulsida (A8) uchragan. Agar siz boshqa joydagi raqamni nazarda tutgan bo'lsangiz, ko'rsating.
-- **A1 bilan bog'liqligi:** entry zona ichida bo'lganda stop masofasi s taxminan (entry − zona chegarasi) + 0.2×ATR; zona balandligi 1.5 ATR bo'lsa s ≈ 1.7 ATR gacha. Binding filtr — A1 (0.5–2.0×ATR); A7 zona sifatini, A1 esa konkret savdo masofasini cheklaydi.
+## 5. Zona kengligi (A7)
+0.3–1.5 × ATR14_M15[B−1]. Sabab (a priori, optimallashtirilmagan): 0.3 dan past — zona deyarli bitta narx (spred va M5 shovqini ma'nosiz qiladi); 1.5 dan yuqori — zona butun harakat diapazoni, stop (balandlik + 0.2×ATR) A1 dagi 2.0×ATR chegarasiga yaqinlashadi. Oldin 1.0 ATR chegarasi zona kengligida **bo'lmagan** (1.0 faqat A8 da). Binding filtr — A1; A7 zona sifati uchun.
 
 ## 6. Retest (A10)
-Retest = zona yaratilgandan keyin M5 sham diapazoni zonaga kirishi (Long: M5 Low ≤ zona High va High ≥ zona Low; Short nosimmetrik). **Retest epizodi** zonaga birinchi kirgan M5 bardan boshlanadi (j0) va M5 sham zonadan to'liq tashqarida bo'lganda (Long: Low > zona High; Short: High < zona Low) tugaydi; keyingi kirish — yangi retest. B yopilganida narx allaqachon zonada bo'lsa, shu birinchi kirish sanalmaydi. **Maksimal 2 retest.** Savdo faqat 1- yoki 2-retest epizodida.
+Retest = zona yaratilgandan keyin M5 sham diapazoni zonani kesishi: `Low ≤ Hz` va `High ≥ Lz` (simmetrik). **Retest epizodi** zonani kesgan birinchi M5 bardan (`j0`, epizodning 1-bari) boshlanadi va M5 sham zonadan **narx tomonida** to'liq tashqarida bo'lganda tugaydi (d=+1: Low > Hz; d=−1: High < Lz); keyingi kesish — yangi retest. B yopilganida narx allaqachon zonada bo'lsa, shu birinchi kesish sanalmaydi. **Maksimal 2 retest;** savdo faqat 1- yoki 2-retest epizodida.
 
-## 7. M5 tasdiq: Pattern + MSS (qaror 2, A11, A12) — savol 4 javobi
-**Retest epizodi ichida** ikki hodisa kerak: **P** (sham patterni) va **M** (MSS):
-- **P — pattern bar:** Engulfing YOKI Pin Bar, **va zona bilan aloqasi:** bar diapazoni zonani kesishi (Long: Low ≤ zona High va High ≥ zona Low) **va** M5 yopilishi zona Low dan yuqorida (Long) / zona High dan pastda (Short). 
-  - *Bullish Engulfing:* sham yashil; oldingi sham qizil; Open ≤ oldingi Close va Close ≥ oldingi Open; Close > oldingi High. Bearish — teskari.
-  - *Bullish Pin Bar:* pastki soya ≥ 2×tana va ≥ 60% diapazon; yuqori soya ≤ 25% diapazon. Bearish — teskari.
-- **M — MSS bar:** M5 yopilishi shu paytda **tasdiqlangan** (k=2) oxirgi M5 swing-high (Long) / swing-low (Short) dan tashqarida; MSS bari retest epizodi boshlanganidan **keyin yoki shu barda** (j0 ≤ M) bo'lishi shart; reference swing dinamik, lekin faqat tasdiqlangan swinglar.
-- **Tartib:** P va M **istalgan tartibda** kelishi mumkin (P birinchi, M birinchi yoki bir barda). **3 ketma-ket M5 bar ichida:** |indeks(M) − indeks(P)| ≤ 2. **Signal bari** = P va M dan keyingisi (yoki ikkalasi bir bar). **Bir epizodda ko'pi bilan 1 signal.**
-- **Signalning eskirishi (staleness):** signal **faqat keyingi M5 bar ochilishida** bajariladi (bitta bar). Quyidagilardan biri bo'lsa signal **eskirgan**, savdo yo'q, kechiktirib ochilmaydi: sessiya/yangilik/spred/pozitsiya band/kunlik limit filtri; stop masofasi filtri (A1) o'tmasa; zona signaldan keyin bekor bo'lsa; signal bari retest epizodidan 12 M5 bar (1 soat) dan keyin bo'lsa. Eskirgan signal retest hisobini o'zgartirmaydi; epizod davom etsa yangi P/M qidiriladi.
+## 7. M5 tasdiq: Pattern + MSS (qaror 2, A11, A12); signal eskirishi (qaror 3)
+Retest epizodi ichida ikki hodisa:
+- **P — pattern bar** (Engulfing YOKI Pin Bar), **zona bilan aloqasi shart:** bar diapazoni zonani kesadi (`Low ≤ Hz` va `High ≥ Lz`) **va** `d × (Close − Fz) > 0` (yopilish zonaning uzoq chetidan narx tomonida):
+  - *Engulfing(d):* sham rangi d tomonda (d=+1 yashil, d=−1 qizil); oldingi sham qarama-qarshi rangda; d=+1: Open ≤ prevClose va Close ≥ prevOpen; d=−1: Open ≥ prevClose va Close ≤ prevOpen; hamda `d × (Close − (d=+1 ? prevHigh : prevLow)) > 0`.
+  - *Pin Bar(d):* rad etuvchi soya (d=+1 pastki; d=−1 yuqori) ≥ 2 × tana va ≥ 60% diapazon; qarama-qarshi soya ≤ 25% diapazon.
+- **M — MSS bar:** epizodning (`j0` dan boshlab) **birinchi** M5 bari, uning yopilishi shu paytdagi oxirgi **tasdiqlangan** (k=2) M5 `SW_d` darajasidan d tomonda tashqarida (d=+1: oxirgi swing-high dan yuqori; d=−1: swing-low dan past).
+- **Tartib va oyna:** P va M istalgan tartibda yoki bir barda; `|indeks(M) − indeks(P)| ≤ 2` (3 ketma-ket M5 bar). **Signal bari** = P va M dan keyingisi. Bir epizodda ko'pi bilan 1 signal.
+- **Signal eskirishi:** (i) **vaqt:** signal bari retest epizodining dastlabki **12 M5 bari** ichida bo'lishi shart (`j0` = 1-bar; signal bari indeksi ≤ j0 + 11) — 12 bar = 1 soat, **epizod boshlanishidan hisoblanadi**; (ii) **bajarilish:** signal **faqat keyingi M5 bar ochilishida** bajariladi; shu paytda bajarilmasa (sessiya/yangilik/spred/band pozitsiya/kunlik blok/A1 filtri/zona bekor) signal **eskiradi**, kechiktirib ochilmaydi. Eskirgan signal retest hisobini o'zgartirmaydi; epizod davom etsa va oyna ichida bo'lsa yangi P/M qidiriladi.
 
-## 8. Kirish, stop, TP (qaror 3, A1, A15)
-- **Kirish:** signal shamidan keyingi M5 bar ochilishida, market (Long Ask da, Short Bid da).
-- **Stop:** Long — zona Low − 0.2 × ATR(M15); Short — zona High + 0.2 × ATR(M15) (ATR — signal paytida oxirgi yopilgan M15 bar). **Sun'iy o'zgartirilmaydi.**
-- **Stop masofasi filtri (A1):** s = |kirish − stop|; **s < 0.5×ATR(M15) yoki s > 2.0×ATR(M15) bo'lsa savdo o'tkaziladi.**
-- **TP:** kirishdan 2×s. Qisman yopish yo'q, breakeven yo'q.
+## 8. Kirish, stop, TP (qaror 3 [oldingi], A1, A15)
+- **Kirish:** keyingi M5 bar ochilishida, market; ijro narxi `Pe` = d=+1: **Ask**, d=−1: **Bid**.
+- **Stop:** `Ps = Fz − d × 0.2 × ATR14_M15[signal]` (d=+1: Lz − 0.2×ATR; d=−1: Hz + 0.2×ATR); ATR — signal bari paytidagi oxirgi yopilgan M15 bar. **Sun'iy o'zgartirilmaydi.**
+- **Masofa:** `s = d × (Pe − Ps)` ($/oz). **A1 filtri:** `s < 0.5×ATR14_M15` yoki `s > 2.0×ATR14_M15` bo'lsa savdo **o'tkaziladi**.
+- **TP:** `Pt = Pe + d × 2.0 × s` (RR 1:2). Qisman yopish yo'q, breakeven yo'q.
 
 ## 9. Risk va pozitsiya (qaror 5, A4, A16)
-Risk: equity (floating bilan) ning 1% i = lot × s × kontrakt qiymati; lot qadamiga pastga yaxlitlanadi; minimal lotdan kichik bo'lsa savdo o'tkaziladi; maksimal lot konfiguratsiyada. **Bir vaqtda faqat bitta EA pozitsiyasi** (MagicNumber bo'yicha). Kuniga savdolar soniga limit yo'q.
+Risk $ = **hisob equity (ACCOUNT_EQUITY, floating bilan) × 1%**; `lot = risk$ / (s × 100)` (1 lot = 100 oz; $/oz × oz); lot qadamiga pastga yaxlitlanadi; minimal lotdan kichik bo'lsa savdo o'tkaziladi; maksimal lot konfiguratsiyada. **Bir vaqtda faqat bitta EA pozitsiyasi** (MagicNumber). Kuniga savdolar soniga limit yo'q.
 
-## 10. Kunlik −4% limit (A2, A3) — savol 9 javobi
-- **Kun boshi:** New York 17:00 mahalliy (DST avtomatik; yakshanba kuni bozor ochilganda 17:00 NY ham). Shu paytdagi **EA hisob equity** (balans + EA pozitsiyalari floating) qayd etiladi: E0.
-- **Kunlik natija D** = (bugungi yopilgan EA savdolari sof natijasi: foyda + **komissiya + swap**) + (ochiq EA pozitsiyalari **floating** P&L, hozirgi bid/ask bo'yicha, spred hisobga olingan). Faqat EA (MagicNumber) bo'yicha (`LimitScope=EA_ONLY`, default); ixtiyoriy `ACCOUNT` — butun hisob equity si.
-- **Limit:** D ≤ −0.04 × E0 bo'lsa:
-  1. **blok bayrog'i** o'rnatiladi (keyingi NY 17:00 gacha yangi kirish yo'q) va u terminal qayta ishga tushganda ham saqlanadi (global o'zgaruvchi);
-  2. **barcha EA pozitsiyalari** darhol yopiladi (retry tartibi 11-bandda, xuddi shu yopish mexanizmi);
-  3. kutilayotgan orderlar (bo'lsa) o'chiriladi; log yoziladi (vaqt, D, E0, pozitsiyalar);
-  4. keyingi **NY 17:00** da blok yechiladi, yangi E0 qayd etiladi.
-- **Backtest:** M1 bo'yicha eng yomon (adverse) narxda D hisoblanadi; D = −4% ga teginsa, pozitsiya shu −4% ni beruvchi narxda yopiladi (spred kiritilgan).
+## 10. Kunlik −4% limit (A2, A3 — qaror 4)
+- **Kun boshi:** New York 17:00 mahalliy (DST avtomatik; yakshanba bozor ochilishida ham). Shu paytda **hisob equity** E0 qayd etiladi (limit nisbati uchun; risk hajmi ham equity dan).
+- **Hisobga kiradi (faqat EA — MagicNumber):** bugun (kun boshidan) yopilgan **EA savdolarining sof natijasi** (foyda + **komissiya** + **swap**) + ochiq **EA pozitsiyalarining floating P&L i** (bid/ask bo'yicha, spred hisobga olingan, ochilish komissiyasi kiritilgan): `D`.
+- **Hisobga KIRMAYDI:** boshqa EA lar, **qo'lda ochilgan** pozitsiyalar va ularning natijalari (MagicNumber boshqa bo'lgan hamma narsa). `LimitScope` konfiguratsiyasi **yo'q**: faqat EA_ONLY (qat'iy).
+- **Limit:** `D ≤ −0.04 × E0` bo'lsa: (1) **blok** o'rnatiladi (keyingi NY 17:00 gacha **yangi kirish yo'q**) va qayta ishga tushganda tiklanadi (11.3); (2) **EA ning barcha pozitsiyalari** yopiladi (11.2 tartibi bilan: retry va favqulodda holat); (3) kutilayotgan EA orderlari o'chiriladi; (4) log (vaqt, D, E0, pozitsiyalar); (5) NY 17:00 da blok yechiladi, yangi E0 qayd etiladi.
+- **Backtest:** M1 adverse narx bo'yicha D hisoblanadi; D = −4% ga teginsa pozitsiya shu −4% ni beruvchi narxda yopiladi.
 
-## 11. Sessiyalar, rollover himoyasi, yangilik, spred (qaror 4, A5, A13, A14) — savol 10 javobi
-- **Sessiyalar (S1):** London 08:00–12:00 (Europe/London), New York 08:00–12:00 (America/New_York); **yangi kirish** faqat shu soatlarda, dushanba–juma; konfiguratsiya `LondonStart/End`, `NewYorkStart/End` (HH:MM mahalliy). Ochiq pozitsiya sessiya tugashi bilan yopilmaydi.
-- **Rollover himoyasi:** `PreRolloverCloseNY` (default 16:30 NY) da barcha EA pozitsiyalari yopiladi; vaqt konfiguratsiyada, o'chirib qo'yish mumkin.
-- **Yopish muvaffaqiyatsiz bo'lsa (favqulodda tartib):**
-  1. 16:30 dan 16:55 gacha **har 60 soniyada** qayta urinish (har urinishda retcode logga; `deviation` oshirilgan: `EmergencyDeviationPoints`, default 100 punkt = $1.00);
-  2. 16:55 da **FAVQULODDA HOLAT:** yangi kirish bloklanadi (`EmergencyBlock`), foydalanuvchiga ogohlantirish (`Alert`, `SendNotification`, `SendMail` — konfiguratsiya) har daqiqa;
-  3. **har 10 soniyada** yopishga urinish davom etadi (bozor ochiq va savdo ruxsat etilgan ekan);
-  4. pozitsiyaning **server tomonidagi SL/TP** (ochilganda qo'yilgan) saqlanadi va **o'zgartirilmaydi** — maksimal yo'qotish 1% risk bilan cheklangan; stop kengaytirilmaydi, hedge ochilmaydi (netting hisoblarda mumkin emas);
-  5. bozor yopilgan bo'lsa (hafta oxiri) yoki broker rad etsa — holat davom etadi, bozor ochilganda birinchi imkoniyatda yopishga urinish, blok yechilmaydi (qo'lda tasdiq kerak: `EmergencyAck=true`); log va bildirishnoma saqlanadi;
-  6. kunlik −4% limitga yetilib yopish muvaffaqiyatsiz bo'lsa ham xuddi shu 1–5 tartib qo'llanadi.
-  - Backtestda favqulodda holat modellashtirilmaydi (yopish 16:30 M1 yopilish narxida muvaffaqiyatli deb olinadi); "yopishsiz" variant sezgirlikda.
-- **Yangilik (A13) — savol 5 javobi:** NFP, CPI (m/m, core m/m, y/y), GDP (advance/prelim/second/final), FOMC (Statement, Federal Funds Rate) — AQSh, yuqori ta'sir. Yangilikdan 60 daqiqa oldin va 30 daqiqa keyin **yangi kirish yo'q**. EA: MT5 Economic Calendar + qo'lda ro'yxat (`news_manual.csv`: `utc_datetime;name`). Backtest: 12.1-bandga qarang.
-- **Spred filtri (A14):** spred > $0.50 bo'lsa kirish yo'q (EA); backtestda doimiy.
+## 11. Sessiyalar, rollover, favqulodda holat, yangilik, spred
+### 11.1 Sessiyalar (S1) va rollover himoyasi (A5)
+- London 08:00–12:00 (Europe/London), New York 08:00–12:00 (America/New_York); **yangi kirish** faqat shu soatlarda, dushanba–juma; konfiguratsiya: `LondonStart/End`, `NewYorkStart/End` (HH:MM mahalliy). Ochiq pozitsiya sessiya tugashi bilan yopilmaydi.
+- `PreRolloverCloseNY` (default **16:30 NY**) da EA ning barcha pozitsiyalari yopiladi; vaqt konfiguratsiyada, o'chirish mumkin.
 
-### 11.1 Yangilik ma'lumoti manbai va formati (backtest) — savol 5
-- **Manba:** `Ehsanrs2/Forex_Factory_Calendar` (Hugging Face, `forex_factory_cache.csv`, ~68 MB, 2007-01 → **2025-04-04**); ustunlar: DateTime, Currency, Impact, Event, Actual, Forecast, Previous, Detail. Biz faqat `Currency=USD`, `Impact="High Impact Expected"` va yuqoridagi nomlar.
-- **Vaqt muammosi:** fayldagi vaqtlarning **49.2%** (2018–2025) yarim tun "00:00:00" placeholder, qolganlarida Eron/AQSh DST farqidan 1 soatlik siljishlar bor (tekshirilgan, `STRATEGY_NEXT.md` jurnali). Shuning uchun **sana fayldan, vaqt esa standart ET jadvalidan** (NFP/CPI/GDP 08:30 ET; FOMC Statement/Federal Funds Rate 14:00 ET), AQSh DST bilan UTC ga o'tkaziladi.
-- **Saqlash formati (kodlashdan keyin, tasdiq bilan):** `data/news/usd_high_impact.csv`: `event_utc, family (NFP|CPI|GDP|FOMC), event_name, date_source (ff_date), time_source (standard_et), ff_datetime_raw`; repoga qo'shiladi (~800 qator), qurilish skripti `tools/build_news_calendar.py` (qayta ishlab chiqarish mumkin).
-- **Mavjudlik (tekshirilgan, 2018–2025-02, USD yuqori ta'sir, noyob sanalar/yil):** NFP 12/12/12/12/12/12/12 (2018–2024) — **hamma oylar mavjud (2018-04 → 2025-02 da yo'q oy yo'q)**; CPI 12 har yili, **hamma oylar mavjud**; FOMC 8–9/yil (2020: 9, favqulodda majlis), 2025 da 2 (yanvar, mart); **GDP to'liq emas**: 2018: 12, 2019: 8, 2020: 5, 2021: 7, 2022: 8, 2023: 12, 2024: 12 (kutilgan ~12: har chorakda 3 versiya) — 2019–2022 da GDP yozuvlari **yetishmaydi** (kalendar bo'shliqlari).
-- **Ma'lumot yetishmasa:** backtestda yetishmayotgan yangilik uchun **blok qo'yilmaydi** (taxmin qilinmaydi) va u **"yangilik filtri tekshirilmagan" deb belgilanadi**; fallback jadval faqat NFP uchun (oy birinchi juma 08:30 ET, istisnolar fayldan) — lekin NFP/CPI to'liq bo'lgani uchun kerak emas; GDP/FOMC uchun fallback yo'q.
-- **Yangilik filtri ishlamagan davrlar (alohida ko'rsatiladi):** (i) **GDP bo'shliqlari 2019–2022** (har yili ~4–7 ta GDP e'lon yo'q); (ii) **2025-03 dan keyingi hamma davr** (FF kesh 2025-04-04 gacha, bizning backtest 2025-02 gacha — ta'sir yo'q, lekin 2025-03+ da filtr yo'q); (iii) **2026-09/10 tavsifiy tekshiruv: kalendar yo'q, filtr o'chirilgan**. Natijalar "filtr to'liq" (NFP/CPI/FOMC, GDP bo'shliqsiz davrlar 2023–2025-02) va "filtr to'liq emas" qismlar bo'yicha ham alohida hisobot qilinadi.
+### 11.2 Yopishga urinish va favqulodda holat (qaror 6)
+1. Yopish buyrug'i (16:30, kunlik limit yoki boshqa sabab) rad etilsa **har 60 soniyada qayta uriniladi** 16:55 gacha (kunlik limit holatida — pozitsiya yopilguncha, bir xil tartib); har urinish `retcode` bilan logga yoziladi; `deviation = EmergencyDeviationPoints` (default 100 punkt = $1.00/oz).
+2. 16:55 da (yoki 60 soniyalik urinishlar tugagach) **FAVQULODDA HOLAT:** yangi kirish **bloklanadi** (`EmergencyBlock`); `Alert`, `SendNotification`, `SendMail` (konfiguratsiya) har daqiqa; **har 10 soniyada** yopishga urinish **pozitsiya yopilguncha davom etadi**.
+3. **Hedge ochilmaydi. SL/TP kengaytirilmaydi va o'zgartirilmaydi** (server tomonidagi himoya SL saqlanadi).
+4. Bozor yopiq (hafta oxiri) yoki broker rad etsa — holat saqlanadi, bozor ochilgach birinchi imkoniyatda yopishga urinish; blok **qo'lda tasdiqlanmaguncha** (`EmergencyAck=true`) yechilmaydi.
+5. Favqulodda holat hisobotda alohida hodisa sifatida qayd etiladi (backtestda modellashtirilmaydi: yopish 16:30 M1 yopilish narxida muvaffaqiyatli deb olinadi; "yopishsiz" variant sezgirlikda).
 
-## 12. Xarajatlar (savol 6)
-- **Spred birligi:** $/oz (XAUUSD narx birligi). **Asosiy: $0.30**, **stress: $0.50** — **to'liq aylanma (round-turn)** spred, bir marta hisoblanadi: Long — kirish **Ask = Bid + S** da, chiqish Bid da (SL/TP Bid ga tegsa); Short — kirish Bid da, chiqish **Ask = Bid + S** da (SL/TP uchun Bid+S ga tegsa). Ya'ni M1 **BID** narxlaridan spred to'liq bir tomonlama qo'shiladi (oldingi tadqiqotlarga nisbatan aniqroq: Short uchun SL/TP Ask bo'yicha tekshiriladi).
-- **Komissiya:** asosiy 0 (standart hisob, spred ichida); sezgirlik: **$7/lot aylanma = $0.07/oz** (raw-spread/ECN hisob).
-- **Slippage:** asosiy 0 (optimistik); **stress:** kirishda **$0.10/oz** va stop-loss chiqishida **$0.10/oz** (TP — limit, slippage yo'q), spred $0.50 bilan birga.
-- **Swap:** NY 16:30 yopish bilan pozitsiyalar rollover (17:00 NY) dan o'tmaydi: swap **0**; majburiy yopish o'chirilgan sezgirlik variantida **yiliga 3% × pozitsiya qiymati × tunlar** (+ chorshanba 3 kunlik) qo'llanadi.
-- **Risk va xarajat:** net R = (foyda − spred − komissiya − slippage − swap) / (s × lot).
+### 11.3 Holatni saqlash va tiklash (qaror 6)
+EA quyidagi holatni **terminal global o'zgaruvchilarida va jurnal faylida** saqlaydi: `DayBlockUntil` (UTC), `E0`, `EmergencyBlock`, `EmergencyAck`, favqulodda holat boshlangan vaqt, urinishlar soni va oxirgi `retcode`, signal/zona holati (faol zona koordinatalari, retest soni). `OnInit` da: holat o'qiladi; ochiq EA pozitsiyasi bo'lsa va blok/favqulodda holat faol bo'lsa — yopish tartibi **davom ettiriladi**; `DayBlockUntil` kelmagan bo'lsa blok saqlanadi; jurnalga "tiklandi" yoziladi. Pozitsiya yopilmaguncha har urinish, ogohlantirish va holat o'zgarishi **jurnalga yoziladi** (Journal + `GSEA_state.log`).
 
-## 13. Parametrlar jadvali (muzlatiladi)
-swing k H1/M15/M5 = 3/3/2 · **impuls: real tana ≥ 1.0×ATR(M15, B−1) (A8: (a)/(b)/(c) tanlov kutilmoqda; default (b))** · zona sham qidirish ≤ 5 bar (S dan orqaga) · zona balandligi 0.3–1.5×ATR(M15, B−1) · zona muddati 96 M15 bar · retest ≤ 2 · Pin Bar 2×/60%/25% · P–M oynasi 3 M5 bar, signal eskirishi 12 M5 bar · stop buferi 0.2×ATR(M15) · stop oralig'i 0.5–2.0×ATR(M15) · RR 2.0 · risk 1% (equity) · kunlik limit 4% (EA_ONLY, floating+komissiya+swap) · kun boshi NY 17:00 · sessiya S1 · rollover yopish NY 16:30 (retry 60 s → 16:55 → favqulodda) · yangilik −60/+30 · spred ≤ $0.50 · backtest spredi $0.30 (stress $0.50).
+### 11.4 Yangilik (A13)
+NFP, CPI (m/m, core m/m, y/y), GDP (advance/prelim/second/final), FOMC (Statement, Federal Funds Rate) — AQSh, yuqori ta'sir: yangilikdan **60 daqiqa oldin va 30 daqiqa keyin yangi kirish yo'q** (ochiq pozitsiya o'z holicha). EA: MT5 Economic Calendar + qo'lda ro'yxat (`news_manual.csv`: `utc_datetime;name`). Backtest manbasi va mavjudligi: 11.5.
 
-## 14. A1–A18 jadvali (yakuniy default'lar va ta'siri) va 10 ta aniqlashtirish xaritasi
+### 11.5 Yangilik ma'lumoti (backtest)
+- **Manba:** `Ehsanrs2/Forex_Factory_Calendar` (Hugging Face, `forex_factory_cache.csv`, ~68 MB, 2007-01 → **2025-04-04**); faqat `Currency=USD`, `Impact="High Impact Expected"` va yuqoridagi nomlar.
+- **Vaqt:** fayldagi vaqtlarning 49.2% i (2018–2025) yarim tun "00:00:00" placeholder, qolganlarida DST farqidan 1 soatlik siljish bor; shuning uchun **sana fayldan, vaqt standart ET jadvalidan** (NFP/CPI/GDP 08:30 ET; FOMC 14:00 ET), AQSh DST bilan UTC ga.
+- **Format (kodlashdan keyin):** `data/news/usd_high_impact.csv`: `event_utc, family, event_name, date_source, time_source, ff_datetime_raw`; `tools/build_news_calendar.py` bilan qayta ishlab chiqariladi.
+- **Mavjudlik (2018–2025-02):** NFP va CPI har oyda bor (yo'q oy yo'q); FOMC 8–9/yil; **GDP to'liq emas**: 2018: 12, 2019: 8, 2020: 5, 2021: 7, 2022: 8, 2023: 12, 2024: 12 (kutilgan ~12).
+- **Yetishmasa:** blok qo'yilmaydi (taxmin yo'q), davr "yangilik filtri tekshirilmagan" deb belgilanadi. **Filtr to'liq bo'lmagan davrlar alohida hisobot qilinadi:** GDP bo'shliqlari 2019–2022; 2025-03 dan keyin kalendar yo'q; 2026 tavsifiy tekshiruvida filtr o'chirilgan.
+
+### 11.6 Spred filtri (A14)
+Spred > $0.50 bo'lsa kirish yo'q (EA); backtestda spred doimiy ($0.30 / stress $0.50).
+
+## 12. Xarajatlar (qaror 5)
+**Hisobotda alohida ikki ssenariy: "Asosiy" va "Stress"; komissiya sezgirligi — uchinchi alohida jadval.**
+
+| Komponent | Asosiy | Stress | Birlik | 1 lot (100 oz) uchun |
+|---|---|---|---|---|
+| Spred (to'liq aylanma) | 0.30 | 0.50 | $/oz | $30 / $50 |
+| Komissiya (aylanma) | 0 | 0 (sezgirlik: **0.07**) | $/oz | 0 (sezgirlik: **$7**) |
+| Slippage — kirish | 0 | 0.10 | $/oz | $10 |
+| Slippage — SL bajarilishi | 0 | 0.10 | $/oz | $10 |
+| Slippage — TP (limit) | 0 | 0 | $/oz | 0 |
+| Swap | 0 (NY 16:30 yopish) | 0 | $/oz/tun | — (yopishsiz sezgirlikda: yiliga 3% × qiymat × tunlar) |
+
+Hisoblash: BUY — kirish Ask = Bid + S, chiqish Bid; SELL — kirish Bid, chiqish Ask = Bid + S (SL/TP SELL uchun Bid+S bo'yicha tekshiriladi). Slippage kirishda har doim **zarar tomonga** (BUY: kirish narxi +0.10; SELL: −0.10), SL chiqishida ham zarar tomonga. **Net R** = (foyda($/oz) − spred − komissiya − slippage − swap) / s.
+
+## 13. Parametrlar reyestri (qiymat, birlik, hisoblash usuli; muzlatiladi)
+
+| # | Parametr | Qiymat | Birlik | Hisoblash usuli / izoh | Konfiguratsiya nomi |
+|---|---|---|---|---|---|
+| 1 | swing k, H1 / M15 / M5 | 3 / 3 / 2 | bar | 1-bo'lim (qat'iy ekstremum, k+k bar) | `SwingK_H1/M15/M5` |
+| 2 | H1 EMA tezkor / sekin | 50 / 200 | davr (H1 yopilishi, EMA, α=2/(n+1)) | 2-bo'lim | `EmaFast/Slow` |
+| 3 | ATR davri | 14 | bar (SMA of TR) | 0-bo'lim; M15 uchun | `AtrPeriod` |
+| 4 | BOS impuls tana ATR ko'paytmasi | 1.0 | × ATR14_M15[B−1] | abs(Close−Open) ≥ 1.0×ATR | `ImpulseBodyAtr` |
+| 5 | Zona sham qidirish chuqurligi | 5 | M15 bar (S dan orqaga) | 4-bo'lim | `ZoneLookbackBars` |
+| 6 | Zona balandligi min / max | 0.3 / 1.5 | × ATR14_M15[B−1] | (Hz−Lz)/ATR | `ZoneHeightMinAtr/MaxAtr` |
+| 7 | Zona muddati | 96 | M15 bar (24 soat) | 4-bo'lim (a) | `ZoneMaxAgeBars` |
+| 8 | Maksimal retest | 2 | marta | 6-bo'lim | `MaxRetests` |
+| 9 | Pin: soya / tana | 2.0 | × tana | rad etuvchi soya ≥ 2×tana | `PinWickBody` |
+| 10 | Pin: soya / diapazon | 60 | % | rad etuvchi soya ≥ 60% diapazon | `PinWickRangePct` |
+| 11 | Pin: qarshi soya max | 25 | % diapazon | qarama-qarshi soya ≤ 25% | `PinOppWickMaxPct` |
+| 12 | P–M oynasi | 3 | ketma-ket M5 bar | |ind(M)−ind(P)| ≤ 2 | `ConfirmWindowBars` |
+| 13 | Signal eskirish vaqti | 12 | M5 bar (1 soat), epizod boshidan | signal bari ≤ j0+11 | `SignalMaxBars` |
+| 14 | Stop buferi | 0.2 | × ATR14_M15[signal] | Ps = Fz − d·0.2·ATR | `StopBufferAtr` |
+| 15 | Stop masofasi min / max (A1) | 0.5 / 2.0 | × ATR14_M15[signal] | s = d·(Pe−Ps) | `StopMinAtr/StopMaxAtr` |
+| 16 | RR (TP) | 2.0 | × s | Pt = Pe + d·2·s | `RewardRisk` |
+| 17 | Risk | 1.0 | % hisob equity | lot = (equity·1%)/(s·100) | `RiskPercent` |
+| 18 | Lot qadami / min / max | broker / broker / konfig | lot | pastga yaxlitlash; min dan kichik → o'tkazish | `MaxLot` |
+| 19 | Kunlik equity limiti | 4.0 | % E0 (EA P&L) | D ≤ −4%·E0 (10-bo'lim) | `DailyLossPercent` |
+| 20 | Kun boshi | 17:00 | NY mahalliy | DST avtomatik | `DayStartNY` |
+| 21 | London sessiya | 08:00–12:00 | Europe/London mahalliy | yangi kirish | `LondonStart/End` |
+| 22 | New York sessiya | 08:00–12:00 | America/New_York mahalliy | yangi kirish | `NewYorkStart/End` |
+| 23 | Rollover oldi yopish | 16:30 | NY mahalliy | 11.1 | `PreRolloverCloseNY` |
+| 24 | Yopish qayta urinish davri / oxiri | 60 s / 16:55 | soniya / NY mahalliy | 11.2 | `CloseRetrySec` |
+| 25 | Favqulodda urinish davri | 10 | soniya | 11.2 | `EmergencyRetrySec` |
+| 26 | Favqulodda deviation | 100 | punkt ($1.00/oz) | 11.2 | `EmergencyDeviationPoints` |
+| 27 | Yangilik oynasi oldin / keyin | 60 / 30 | daqiqa | 11.4 | `NewsBeforeMin/AfterMin` |
+| 28 | Spred filtri (EA) | 0.50 | $/oz | spred > 0.50 → kirish yo'q | `MaxSpread` |
+| 29 | Backtest spredi asosiy / stress | 0.30 / 0.50 | $/oz | 12-bo'lim | (test) |
+| 30 | Komissiya sezgirligi | 0.07 | $/oz ($7/lot) | 12-bo'lim | (test) |
+| 31 | Stress slippage kirish / SL | 0.10 / 0.10 | $/oz | 12-bo'lim | (test) |
+| 32 | Swap (yopishsiz sezgirlik) | 3 | % yiliga × qiymat × tunlar | | (test) |
+
+## 14. A1–A18 jadvali (default'lar va ta'siri)
 
 | # | Masala | Qaror | Strategiyaga ta'siri |
 |---|---|---|---|
-| A1 | Stop masofasi | zona ± 0.2×ATR; masofa 0.5–2.0×ATR(M15) dan tashqarida → savdo o'tkaziladi; stop o'zgartirilmaydi | Juda keng (uzoq TP) va juda tor (xarajat ulushi) stoplar kesiladi |
-| A2 | Kun boshi | NY 17:00 mahalliy, DST avtomatik | −4% har kuni bir nuqtadan; server vaqtiga bog'liq emas |
-| A3 | −4% ga yetsa | blok + hamma EA pozitsiyalarini yopish, NY 17:00 gacha | Katta zarar kuni cheklanadi (10-bo'lim) |
-| A4 | Risk asosi | equity (floating bilan) | Zarar paytida hajm kamayadi |
-| A5 | Sessiyadan tashqari | yangi kirish faqat sessiyada; NY 16:30 (konfiguratsiya) da yopish; muvaffaqiyatsiz bo'lsa favqulodda tartib | Kechasi swap/gap/rollover xavfi kamayadi; ba'zi savdolar TP/SL ga yetmay yopiladi |
-| A6 | Zona | 4-bo'limdagi aniq algoritm (S, Z, tekshiruv); to'liq diapazon; 24 soat | Eng ta'sirli: zona tanlash savdolar sonini va stopni belgilaydi |
-| A7 | Zona kengligi | 0.3–1.5×ATR(M15, B−1) (5-bo'lim) | Juda tor/keng zonalar kesiladi |
-| A8 | BOS impulsi | real tana ≥ 1.0×ATR(M15, B−1) (default (b); (a)/(c) tanlov kutilmoqda) | BOS 12.7% barlarda (vs 41%): savdolar ancha kam |
+| A1 | Stop masofasi | zona ± 0.2×ATR; masofa 0.5–2.0×ATR dan tashqarida → savdo o'tkaziladi; stop o'zgartirilmaydi | Juda keng (uzoq TP) va juda tor (xarajat) stoplar kesiladi |
+| A2 | Kun boshi | NY 17:00 mahalliy, DST avtomatik | −4% har kuni bir nuqtadan |
+| A3 | −4% ga yetsa | blok + EA ning hamma pozitsiyasini yopish, NY 17:00 gacha | Katta zarar kuni cheklanadi |
+| A4 | Risk asosi | hisob equity (floating bilan) | Zarar paytida hajm kamayadi |
+| A5 | Sessiyadan tashqari | yangi kirish faqat sessiyada; NY 16:30 yopish; favqulodda tartib | Kechasi swap/gap/rollover xavfi kamayadi |
+| A6 | Zona | 4-bo'lim algoritmi; simmetrik oldindan-buzilmaganlik tekshiruvi | Zona tanlash savdolar sonini va stopni belgilaydi |
+| A7 | Zona kengligi | 0.3–1.5×ATR | Tor/keng zonalar kesiladi |
+| A8 | BOS impulsi | real tana ≥ 1.0×ATR(B−1) | BOS ~12.7% barlarda: savdolar kam; N<100 → xulosasiz |
 | A9 | Swing k | 3/3/2 | k kichik — shovqin, katta — kechikish |
-| A10 | Retest | epizod ta'rifi (6-bo'lim); ≤ 2 | Eski zonalarda savdo yo'q |
-| A11 | Tasdiq | P va M istalgan tartibda, 3 bar ichida; P zonaga tegishi; signal 1 barda bajariladi, 12 bardan keyin eskiradi (7-bo'lim) | Bir barda talab qilinsa savdo deyarli yo'q; 3 bar ruxsati ko'paytiradi |
-| A12 | Pattern parametrlari | Pin 2×/60%/25%; Engulfing qat'iy | Qat'iy ta'rif: kam, lekin aniq signal |
-| A13 | Yangilik | NFP/CPI/GDP/FOMC −60/+30; EA kalendar + qo'lda; backtest FF + standart ET (11.1) | EA/backtest manbasi farq qiladi; GDP 2019–2022 bo'shliq |
-| A14 | Spred | ≤ $0.50 (EA); backtest doimiy | Backtestda spred kengayishi modellashtirilmaydi |
-| A15 | TP | 2R; qisman yopish/BE yo'q | Natija −1R yoki +2R |
-| A16 | Lot | risk$/(s×kontrakt), pastga, min lotdan kichik → o'tkaziladi | Kichik hisobda signallar o'tkazilishi mumkin |
-| A17 | Aktiv | XAUUSD; FX tasdiq qo'shimcha dalil (qarorga kirmaydi) | Oltinda N kam bo'lsa FX ishonch beradi |
-| A18 | Ma'lumot | M1 BID, doimiy spred, real tick yo'q | Sham ichi tartibi taxminiy (stop birinchi) |
+| A10 | Retest | epizod ta'rifi; ≤ 2 | Eski zonalarda savdo yo'q |
+| A11 | Tasdiq | P va M ixtiyoriy tartibda 3 bar ichida; signal 12 bar (epizoddan) va keyingi ochilishda bajarilmasa eskiradi | Kechikkan kirishlar yo'q |
+| A12 | Pattern | Pin 2×/60%/25%; Engulfing qat'iy | Kam, lekin aniq signal |
+| A13 | Yangilik | NFP/CPI/GDP/FOMC −60/+30; EA kalendar + qo'lda; backtest FF + ET | GDP 2019–2022 bo'shliq |
+| A14 | Spred | ≤ $0.50 (EA) | Backtestda spred kengayishi yo'q |
+| A15 | TP | 2R | −1R yoki +2R |
+| A16 | Lot | pastga yaxlitlash, min dan kichik → o'tkazish | Kichik hisobda signallar o'tkaziladi |
+| A17 | Aktiv | XAUUSD; FX qo'shimcha dalil | N kam bo'lsa FX ishonch beradi |
+| A18 | Ma'lumot | M1 BID, doimiy spred | Sham ichi tartibi taxminiy (stop birinchi) |
 
-**10 ta aniqlashtirish xaritasi:** 1 → 3-bo'lim; 2 → 4-bo'lim; 3 → 5-bo'lim; 4 → 7-bo'lim; 5 → 11 va 11.1-bo'lim; 6 → 12-bo'lim; 7 → test rejasi 6-bo'lim; 8 → test rejasi 3-bo'lim; 9 → 10-bo'lim; 10 → 11-bo'lim.
-
-## 15. Muzlatishdan oldin qolgan qarorlar (sizdan)
-1. **A8 varianti:** (b) real tana ≥ 1.0×ATR (default), (c) tana ≥ 0.7×ATR, yoki (a) diapazon ≥ 1.0×ATR. Tavsifiy: (b) = 12.7% barlar, (c) = 24.4%, (a) = 41.2%.
-2. Zona tekshiruvi 4-bandda (Z dan B−1 gacha pastda yopilish bo'lsa zona yaratilmaydi): ma'qulmi?
-3. Signal eskirishi 12 M5 bar (1 soat) ma'qulmi?
-4. `LimitScope=EA_ONLY` (default) ma'qulmi?
-5. Stress slippage ($0.10) va komissiya sezgirligi ($0.07/oz) ma'qulmi?
-6. Favqulodda holat (11-bo'lim): hedge ochilmaydi va stop kengaytirilmaydi — ma'qulmi?
+## 15. Foydalanuvchi qarorlari (v3 asosi)
+1. A8 = (b): real tana ≥ 1.0×ATR(M15) (ATR — BOS dan oldingi yopilgan bar); N<100 → parametr o'zgarmaydi, "xulosasiz". 2. Zona tekshiruvi simmetrik (3-bandda). 3. Signal eskirishi 12 M5 bar, retest epizodi boshidan; keyingi ochilishda bajarilmasa eskiradi. 4. Kunlik −4%: faqat EA P&L (floating, komissiya, swap bilan); boshqa EA va qo'lda ochilgan pozitsiyalar kirmaydi; limitda EA ning hamma pozitsiyasi yopiladi, NY 17:00 gacha blok. 5. Stress: spred $0.30/$0.50, komissiya $0.07/oz sezgirligi, stress slippage $0.10 (kirish va SL); asosiy va stress alohida hisobot; birliklar/1 lot qiymati ko'rsatilgan. 6. Favqulodda tartib: hedge yo'q, SL kengaytirilmaydi, yangi savdo bloklanadi, urinishlar/ogohlantirishlar davom etadi, holat jurnalga yoziladi va qayta ishga tushganda tiklanadi.
 
 ## 16. Ochiq cheklovlar
-1. Zona sham tanlash (4-bo'lim) bir nechta mantiqiy ta'rifdan biri; boshqalari sinalmaydi.
-2. Savdolar soni oldindan noma'lum; **hech bir taxmin natija sifatida e'lon qilinmaydi.** (A8 (b) bilan savdolar ancha kam bo'lishi mumkin, bu "xulosasiz" natijaga olib kelishi mumkin.)
+1. Zona sham tanlash bir nechta mantiqiy ta'rifdan biri; boshqalari sinalmaydi.
+2. Savdolar soni oldindan noma'lum; **hech bir taxmin natija sifatida e'lon qilinmaydi.** A8 (b) bilan savdolar kam bo'lib, "xulosasiz" natija chiqishi mumkin.
 3. MQL5 da kalendar API va DST qoidalari qo'lda; Strategy Tester'da kalendar ishlamasligi mumkin.
 4. Rollover spredi, requote va favqulodda holat M1 BID ma'lumotda ko'rinmaydi.
 
-## 17. O'zgartirishlar jurnali
-(hozircha bo'sh; tasdiqdan keyin to'ldiriladi)
+## 17. v2 → v3 o'zgarishlar ro'yxati
+1. A8: "(b) tanlov kutilmoqda" → **(b) qat'iy qaror**; (a)/(c) faqat sezgirlik; N<100 → parametr o'zgarmaydi (3, 14, 15).
+2. Zona tekshiruvi: "(Z, B−1] da hech bir yopilish zona Low dan pastda emas" → **simmetrik Demand/Supply, [Z, B−1] oraliqda** (4-bandning 4-qadami).
+3. Signal eskirishi: "12 M5 bar" aniqlashtirildi: **epizod boshidan** (j0 = 1-bar, signal bari ≤ j0+11) **va** keyingi ochilishda bajarilmasa eskiradi (7-bo'lim).
+4. Kunlik limit: `LimitScope` (EA_ONLY/ACCOUNT) **olib tashlandi** — faqat EA; boshqa EA va qo'lda pozitsiyalar kirmasligi aniq yozildi; komissiya, swap, floating kiritilgan (10-bo'lim).
+5. Xarajatlar: jadval (asosiy/stress alohida, komissiya sezgirligi, slippage), birlik va 1 lot qiymati (12-bo'lim); hisobotda alohida ssenariylar.
+6. Favqulodda tartib: urinishlar/ogohlantirishlar davomiyligi, SL o'zgartirilmasligi, hedge yo'qligi, **holatni saqlash va qayta ishga tushganda tiklash** (11.2, 11.3) qo'shildi.
+7. BUY/SELL **yagona formula** (d = ±1) bilan simmetrik qilindi: BOS, zona, pre-violation, retest tugashi, Engulfing, Pin Bar, MSS, stop, TP (0, 1–8 bandlar).
+8. **Parametrlar reyestri** (13-bo'lim): 32 parametr — qiymat, birlik, hisoblash usuli, konfiguratsiya nomi.
+9. Birlik va 1 lot qiymati konventsiyasi (0-bo'lim: 1 punkt, pip, lot).
+10. Yangilik ma'lumoti (11.5) ixchamlashtirildi (mazmun v2 bilan bir xil).
+
+## 18. O'zgartirishlar jurnali (muzlatilgandan keyin)
+(hozircha bo'sh; muzlatishga foydalanuvchi alohida ruxsat bergandan keyin to'ldiriladi)
