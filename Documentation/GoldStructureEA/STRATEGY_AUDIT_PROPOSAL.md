@@ -1,6 +1,6 @@
 # GoldStructureEA: Strategy Audit taklifi (kod yo'q, faqat ta'riflar va sinov rejasi)
 
-Holat: **taklif, tasdiqlash kutilmoqda.** Bu hujjat strategiyani audit qiladi: har bir tushunchani **aniq, kodlanadigan qoidaga** aylantiradi, noaniq joylarni ko'rsatadi, sinov rejasini taklif qiladi. Hech qanday savdo kodi yozilmagan. Tasdiqlangan ta'riflar `Documentation/GoldStructureEA/STRATEGY_SPEC.md` (muzlatilgan spetsifikatsiya) va pre-registered sinov rejasiga ko'chiriladi.
+Holat: **taklif; foydalanuvchi qarorlari `DECISIONS.md` da yozilgan va 3.2, 3.6, 3.7 (stop), 3.8 (sessiya/limit) bandlarini yangilaydi (H1: EMA va struktura ikkalasi shart; M5: pattern VA MSS; stop zona chegarasi ± 0.2 ATR; sessiyalar mahalliy vaqtda, DST avtomatik; kuniga savdo limiti yo'q, bir vaqtda 1 pozitsiya).** Bu hujjat strategiyani audit qiladi: har bir tushunchani **aniq, kodlanadigan qoidaga** aylantiradi, noaniq joylarni ko'rsatadi, sinov rejasini taklif qiladi. Hech qanday savdo kodi yozilmagan. Tasdiqlangan ta'riflar `Documentation/GoldStructureEA/STRATEGY_SPEC.md` (muzlatilgan spetsifikatsiya) va pre-registered sinov rejasiga ko'chiriladi.
 
 ## 1. Strategiya (sizning matningiz)
 XAUUSD kun ichi. **H1:** EMA50/200 + bozor strukturasi. **M15:** BOS + Supply/Demand zona. **M5:** Engulfing, Pin Bar, MSS tasdig'i. Zonaga maksimal 2 retest. Risk 1%/savdo, kunlik equity zarar limiti 4%, RR 1:2. London + New York sessiyalari. MT5 Economic Calendar + qo'lda yangilik zaxirasi.
